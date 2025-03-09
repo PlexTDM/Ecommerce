@@ -30,7 +30,11 @@ package-lock.json
 .yarn-integrity
 
 # dotenv environment variable files
+<<<<<<< HEAD
 .env
+=======
+# .env
+>>>>>>> 9ac638e (update gitignore)
 # .env.development.local
 # .env.test.local
 # .env.production.local
