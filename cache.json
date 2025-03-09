@@ -1,0 +1,324 @@
+{
+    "data": [
+        {
+            "title": "Darkstalkers Bishoujo Hsien-Ko",
+            "link": "https://example.com/shop/67bfdb1f751fec0028aaf0ae/Darkstalkers-Bishoujo-Hsien-Ko",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/262.201.318.318/shop/product/8d863d38f40a468ab10ce935c441bfc4.jpg",
+            "price": "$161.99",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Frame Arms Girl Laetitia: Silver Ver.",
+            "link": "https://example.com/shop/67bfdb1f751fec0028aaf0ad/Frame-Arms-Girl-Laetitia-Silver-Ver",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/125.63.400.400/shop/product/f3153a72ba104d7c80fd2705d54d64b6.jpg",
+            "price": "$41.39",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Bunny Girls: Limited Color Ver. 1/6 Scale Figure",
+            "link": "https://example.com/shop/67bf10cb751fec0028aaef0d/Bunny-Girls-Limited-Color-Ver-1-6-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/196.166.364.365/shop/product/46b6608410604f619090c04fae19887d.jpg",
+            "price": "$63.89",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Goblin Slayer II Priestess: Bikini Armor Ver. 1/7 Scale Figure",
+            "link": "https://example.com/shop/67bf10cb751fec0028aaef0c/Goblin-Slayer-II-Priestess-Bikini-Armor-Ver-1-7-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/224.59.419.419/shop/product/f891068aad744eaab6e85fd4cd59cfdb.jpg",
+            "price": "$197.09",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "The Executioner and Her Way of Life Menou: Swimsuit Ver. 1/7 Scale Figure",
+            "link": "https://example.com/shop/67bf10cb751fec0028aaef0b/The-Executioner-and-Her-Way-of-Life-Menou-Swimsuit-Ver-1-7-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/231.63.368.368/shop/product/ac730190ee8f45e3920ab0ee8072a91a.jpg",
+            "price": "$197.09",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Infinity Studio x Arcane: League of Legends Vi 1/4 Scale Figure",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef0a/Infinity-Studio-x-Arcane-League-of-Legends-Vi-1-4-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/132.148.394.394/shop/product/a19f3166f5364ebbba97f3d0de11f006.jpg",
+            "price": "$1,114.19",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "figma Hatsune Miku NT",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef09/figma-Hatsune-Miku-NT",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/211.277.316.316/shop/product/8fb3c7c7c94d4a07aa9eb67c395aad63.jpg",
+            "price": "$71.09",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Pop Up Parade SP Arcane: League of Legends Champion Viktor",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef08/Pop-Up-Parade-SP-Arcane-League-of-Legends-Champion-Viktor",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/199.155.363.362/shop/product/fec546f3aa51400c940f8d9539908434.jpg",
+            "price": "$53.99",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Pop Up Parade SP Persona 5 Royal Arsène",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef07/Pop-Up-Parade-SP-Persona-5-Royal-Ars%C3%A8ne",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/214.216.317.316/shop/product/a715807774f44505b7ee0559892fec28.jpg",
+            "price": "$93.59",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Nendoroid Doll KonoSuba: God's Blessing on This Wonderful World! 3 Megumin",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef06/Nendoroid-Doll-KonoSuba-God-s-Blessing-on-This-Wonderful-World!-3-Megumin",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/120.81.630.628/shop/product/34fc6283b3f54472bf7176aaa70ee4b8.jpg",
+            "price": "$86.39",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Nendoroid D.Gray-man Lenalee Lee",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef05/Nendoroid-D-Gray-man-Lenalee-Lee",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/84.51.593.594/shop/product/e0be17c5bcd5457488ef052ca7c5d872.jpg",
+            "price": "$50.39",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Nendoroid D.Gray-man Allen Walker (Re-run)",
+            "link": "https://example.com/shop/608780bdb58d454b375915c6/Nendoroid-D-Gray-man-Allen-Walker-Re-run",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/0.40.600.599/shop/product/160d131a1e6d4f929387c604f75679fd.jpg",
+            "price": "$43.19",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Freng Illustration Migu-chan Deluxe Edition 1/6 Scale Figure",
+            "link": "https://example.com/shop/67bfa7b7751fec0028aaef2f/Freng-Illustration-Migu-chan-Deluxe-Edition-1-6-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/542.556.737.736/shop/product/e65d385afc324dc89887fe78078b5389.jpg",
+            "price": "$68.39",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Freng Illustration Migu-chan Standard Edition 1/6 Scale Figure",
+            "link": "https://example.com/shop/67bfa7b7751fec0028aaef2e/Freng-Illustration-Migu-chan-Standard-Edition-1-6-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/390.205.913.912/shop/product/7af199501ae74749bf4829e9e100f632.jpg",
+            "price": "$59.39",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Piccodo Fei Ren Zai Ne Zha Action Doll (Re-run)",
+            "link": "https://example.com/shop/5e797f360f0d71f937e7432a/Piccodo-Fei-Ren-Zai-Ne-Zha-Action-Doll-Re-run",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/123.261.704.704/shop/product/5802a95821764bb7ad066f6c8c59d1a6.jpg",
+            "price": "$62.09",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "PRISMA WING Re:Zero -Starting Life in Another World- Ram Glass Edition Bonus 1/7 Scale Figure",
+            "link": "https://example.com/shop/67bea3937fb8c7001de2d179/PRISMA-WING-Re-Zero-Starting-Life-in-Another-World-Ram-Glass-Edition-Bonus-1-7-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/310.49.609.607/shop/product/564cddd7df5242fa8564421e03db2912.jpg",
+            "price": "$237.59",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Megami Device Puni☆Mofu Lang",
+            "link": "https://example.com/shop/67be7967405ba40029d821df/Megami-Device-Puni%E2%98%86Mofu-Lang",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/129.72.458.457/shop/product/99923bd33cbb4c67970e452b5cfce76b.jpg",
+            "price": "$50.39",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Chained Soldier Tenka Izumo: Swimsuit Ver. 1/7 Scale Figure",
+            "link": "https://example.com/shop/67be617953cecc00295d169b/Chained-Soldier-Tenka-Izumo-Swimsuit-Ver-1-7-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/504.76.542.541/shop/product/16521c4f98d748319d16909de74472b1.jpg",
+            "price": "$175.99",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Lupin the Third: The Woman Called Fujiko Mine Fujiko Mine 1/6 Scale Action Figure",
+            "link": "https://example.com/shop/67be617953cecc00295d1699/Lupin-the-Third-The-Woman-Called-Fujiko-Mine-Fujiko-Mine-1-6-Scale-Action-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/514.178.775.775/shop/product/daf37fde604947908eaf30a65042dfb5.jpg",
+            "price": "$153.89",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Myabit Illustration Preparing For A Date Shiso 1/6 Scale Figure",
+            "link": "https://example.com/shop/67be617953cecc00295d1698/Myabit-Illustration-Preparing-For-A-Date-Shiso-1-6-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/509.501.669.669/shop/product/2479c3e8baa14d28b31529cd793df0fa.jpg",
+            "price": "$65.69",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Megami Magazine April 2025",
+            "link": "https://example.com/shop/67b812c848a36f001e858602/Megami-Magazine-April-2025",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/shop/product/7a67bf3532f449c7a90ae887cba4d417.jpg",
+            "price": "$12.59",
+            "discount": "10% OFF",
+            "status": "Special Order"
+        },
+        {
+            "title": "Love Live! Days April 2025",
+            "link": "https://example.com/shop/67b812c848a36f001e8585ff/Love-Live!-Days-April-2025",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/shop/product/a1ed3cc3428e40c5a073718fb6adc52e.jpg",
+            "price": "$9.89",
+            "discount": "10% OFF",
+            "status": "Special Order"
+        },
+        {
+            "title": "Dengeki Moeoh April 2025",
+            "link": "https://example.com/shop/67b812c748a36f001e8585fa/Dengeki-Moeoh-April-2025",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/shop/product/0c3dfd41e11f4286a3d066f2147e0c3d.jpg",
+            "price": "$17.09",
+            "discount": "10% OFF",
+            "status": "Special Order"
+        },
+        {
+            "title": "Blue Lock Vol. 28",
+            "link": "https://example.com/shop/67b5762f52e13e00289a357d/Blue-Lock-Vol-28",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/shop/product/989a4d65e674497c83652a08a37daac6.jpg",
+            "price": "$4.49",
+            "discount": "10% OFF"
+        },
+        {
+            "title": "Blue Lock Character Book EGOIST BIBLE Vol. 2",
+            "link": "https://example.com/shop/67b5762f52e13e00289a357c/Blue-Lock-Character-Book-EGOIST-BIBLE-Vol-2",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/shop/product/63e4f17c7d3045e98f6488dbf67c162b.jpg",
+            "price": "$8.09",
+            "discount": "10% OFF",
+            "status": "Special Order"
+        },
+        {
+            "title": "Blue Lock Character Book EGOIST BIBLE Vol. 1",
+            "link": "https://example.com/shop/67b5762f52e13e00289a357b/Blue-Lock-Character-Book-EGOIST-BIBLE-Vol-1",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/shop/product/9026ade73b5f4763b5371ff455e1a8da.jpg",
+            "price": "$8.09",
+            "discount": "10% OFF",
+            "status": "Special Order"
+        },
+        {
+            "title": "One Piece Vol. 110",
+            "link": "https://example.com/shop/67b5762f52e13e00289a357a/One-Piece-Vol-110",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/shop/product/32771941948345b1b7ae3843b9a54801.jpg",
+            "price": "$4.49",
+            "discount": "10% OFF",
+            "status": "Special Order"
+        },
+        {
+            "title": "One Piece Nico Robin",
+            "link": "https://example.com/shop/67b5762e52e13e00289a3579/One-Piece-Nico-Robin",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/shop/product/25d743ae688a4f89ac0e5edc9310cc96.jpg",
+            "price": "$7.19",
+            "discount": "10% OFF",
+            "status": "Special Order"
+        },
+        {
+            "title": "One Piece Tony Tony Chopper",
+            "link": "https://example.com/shop/67b5762e52e13e00289a3578/One-Piece-Tony-Tony-Chopper",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/shop/product/c43b974c43ee434396f428fe8462ef92.jpg",
+            "price": "$7.19",
+            "discount": "10% OFF",
+            "status": "Special Order"
+        },
+        {
+            "title": "Darkstalkers Bishoujo Hsien-Ko",
+            "link": "https://example.com/shop/67bfdb1f751fec0028aaf0ae/Darkstalkers-Bishoujo-Hsien-Ko",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/262.201.318.318/shop/product/8d863d38f40a468ab10ce935c441bfc4.jpg",
+            "price": "$161.99",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Frame Arms Girl Laetitia: Silver Ver.",
+            "link": "https://example.com/shop/67bfdb1f751fec0028aaf0ad/Frame-Arms-Girl-Laetitia-Silver-Ver",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/125.63.400.400/shop/product/f3153a72ba104d7c80fd2705d54d64b6.jpg",
+            "price": "$41.39",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Bunny Girls: Limited Color Ver. 1/6 Scale Figure",
+            "link": "https://example.com/shop/67bf10cb751fec0028aaef0d/Bunny-Girls-Limited-Color-Ver-1-6-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/196.166.364.365/shop/product/46b6608410604f619090c04fae19887d.jpg",
+            "price": "$63.89",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Goblin Slayer II Priestess: Bikini Armor Ver. 1/7 Scale Figure",
+            "link": "https://example.com/shop/67bf10cb751fec0028aaef0c/Goblin-Slayer-II-Priestess-Bikini-Armor-Ver-1-7-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/224.59.419.419/shop/product/f891068aad744eaab6e85fd4cd59cfdb.jpg",
+            "price": "$197.09",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "The Executioner and Her Way of Life Menou: Swimsuit Ver. 1/7 Scale Figure",
+            "link": "https://example.com/shop/67bf10cb751fec0028aaef0b/The-Executioner-and-Her-Way-of-Life-Menou-Swimsuit-Ver-1-7-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/231.63.368.368/shop/product/ac730190ee8f45e3920ab0ee8072a91a.jpg",
+            "price": "$197.09",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Infinity Studio x Arcane: League of Legends Vi 1/4 Scale Figure",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef0a/Infinity-Studio-x-Arcane-League-of-Legends-Vi-1-4-Scale-Figure",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/132.148.394.394/shop/product/a19f3166f5364ebbba97f3d0de11f006.jpg",
+            "price": "$1,114.19",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "figma Hatsune Miku NT",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef09/figma-Hatsune-Miku-NT",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/211.277.316.316/shop/product/8fb3c7c7c94d4a07aa9eb67c395aad63.jpg",
+            "price": "$71.09",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Pop Up Parade SP Arcane: League of Legends Champion Viktor",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef08/Pop-Up-Parade-SP-Arcane-League-of-Legends-Champion-Viktor",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/199.155.363.362/shop/product/fec546f3aa51400c940f8d9539908434.jpg",
+            "price": "$53.99",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Pop Up Parade SP Persona 5 Royal Arsène",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef07/Pop-Up-Parade-SP-Persona-5-Royal-Ars%C3%A8ne",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/214.216.317.316/shop/product/a715807774f44505b7ee0559892fec28.jpg",
+            "price": "$93.59",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Nendoroid Doll KonoSuba: God's Blessing on This Wonderful World! 3 Megumin",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef06/Nendoroid-Doll-KonoSuba-God-s-Blessing-on-This-Wonderful-World!-3-Megumin",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/120.81.630.628/shop/product/34fc6283b3f54472bf7176aaa70ee4b8.jpg",
+            "price": "$86.39",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        },
+        {
+            "title": "Nendoroid D.Gray-man Lenalee Lee",
+            "link": "https://example.com/shop/67bf10ca751fec0028aaef05/Nendoroid-D-Gray-man-Lenalee-Lee",
+            "image": "https://resize.cdn.otakumode.com/ex/180.180/84.51.593.594/shop/product/e0be17c5bcd5457488ef052ca7c5d872.jpg",
+            "price": "$50.39",
+            "discount": "10% OFF",
+            "status": "Pre-order"
+        }
+    ],
+    "timestamp": 1740674810233,
+    "ttl": 7200000
+}

@@ -1,0 +1,35 @@
+.swiper-vertical .swiper-button-next,
+.swiper-vertical .swiper-button-prev {
+	left: 50%;
+	transform: rotate(90deg);
+	transform-origin: left center;
+}
+.swiper-vertical .swiper-button-prev {
+	top: calc(var(--swiper-navigation-size) / 2 - 20px);
+}
+.swiper-vertical .swiper-button-next {
+	top: auto;
+	bottom: calc(var(--swiper-navigation-size) / 2 - 20px);
+}
+.swiper-wrapper{
+  padding: 30px 0;
+}
+
+.container-sp {
+    width: 100%;
+    @media (width >= 40rem /* 640px */) {
+        max-width: 40rem /* 640px */;
+    }
+    @media (width >= 48rem /* 768px */) {
+        max-width: 48rem /* 768px */;
+    }
+    @media (width >= 64rem /* 1024px */) {
+        max-width: 74rem /* 1024px */;
+    }
+    @media (width >= 80rem /* 1280px */) {
+        max-width: 90rem /* 1280px */;
+    }
+    @media (width >= 96rem /* 1536px */) {
+        max-width: 100rem /* 1536px */;
+    }
+}
