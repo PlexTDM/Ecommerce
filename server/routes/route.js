@@ -85,10 +85,7 @@ app.post('/logout', (req, res) => {
 
   verify(accessToken, process.env.SECRET_ACCESS_TOKEN, (err, data) => {
     if (err) return res.status(401).json({ message: err })
-
-    prisma.accessTokens.delete({
-      token: accessToken,
-    })
+    // implement logout logic
     res.json({ message: 'Logged out' })
   })
 })

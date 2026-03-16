@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import puppeteer from 'puppeteer';
+// removed puppeteer from package.json
 
 const __dirname = path.resolve()
 

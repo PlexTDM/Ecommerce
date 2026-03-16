@@ -1,18 +1,20 @@
 import cors from 'cors'
 
-const allowedOrigins = [
-    "http://192.168.1.57",
-    "http://192.168.1.57:5173",
-    "http://192.168.1.176",
-    "http://localhost:8888",
-    "http://192.168.88.127",
-];
+
+const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS || '';
+const allowedOriginsArray = allowedOrigins.split(',').map(item => item.trim());
 
 const corsConfig = cors({
     allowMethods: ["GET", "POST", "PUT", "DELETE"],
     maxAge: 600,
     credentials: true,
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        if (allowedOriginsArray.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(`${origin} is not allowed by CORS`);
+        }
+    },
 });
 
 export default corsConfig;
