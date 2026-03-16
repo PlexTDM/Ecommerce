@@ -6,11 +6,9 @@ import axios from 'axios'
 import { SideSearchBar, Pagination, Loading } from "../components"
 import { animate, motion } from "motion/react"
 import { parseUrlParts } from '../helper/functions'
-import { ProductsContext } from "../context/ProductsContext"
 
 const Product = () => {
   const { page = 1 } = useParams()
-  const { productsPage, setProductsPage } = useContext(ProductsContext)
   const dispatch = useDispatch()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
@@ -26,26 +24,42 @@ const Product = () => {
 
   useEffect(() => {
     setLoading(true)
-    if (productsPage && productsPage.length > 0) {
-      console.log('cachesds', productsPage)
+
+    const cachedProducts = localStorage.getItem(`products:${page}`)
+    if (cachedProducts) {
+      const { data, expires } = JSON.parse(cachedProducts)
+
+      if (expires < new Date().getTime()) {
+        localStorage.removeItem(`products:${page}`)
+        return
+      }
+      if (!data) {
+        localStorage.removeItem(`products:${page}`)
+        return
+      }
+      setPages(data.totalPages)
+      setProducts(data.products)
+      setProductsLength(data.totalProducts)
+      setNotFound(data.products.length === 0)
       setLoading(false)
-      return setProducts(productsPage)
+      return
     }
 
     axios.get(`${import.meta.env.VITE_FRONT_END_API}/products/${page}`)
       .then(res => {
         setPages(res.data.totalPages)
-        setProductsPage(res.data.products)
         setProducts(res.data.products)
         setProductsLength(res.data.totalProducts)
         setNotFound(res.data.products.length === 0)
+        // cache products for 1 day cuz DB doesnt update, make it 10m for prod
+        localStorage.setItem(`products:${page}`, JSON.stringify({ data: res.data, expires: new Date().getTime() + 24 * 60 * 60 * 1000 }))
       }).catch(err => {
         console.error("Error fetching products:", err)
       }).finally(() => {
         setLoading(false)
       })
 
-  }, [])
+  }, [page])
 
   useEffect(() => {
     if (!searchParams.get('q')) return

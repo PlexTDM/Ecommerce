@@ -6,7 +6,6 @@ import { useState } from 'react'
 const Navbar = () => {
 
     const state = useSelector(state => state.handleCart)
-    console.log(state)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     const toggleMenu = () => {

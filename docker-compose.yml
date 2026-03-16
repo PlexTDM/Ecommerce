@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce-client
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+    networks:
+      - ecommerce-net
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: ecommerce-server
+    expose:
+      - "8888"
+    env_file:
+      - ./server/.env
+    restart: unless-stopped
+    networks:
+      - ecommerce-net
+
+networks:
+  ecommerce-net:

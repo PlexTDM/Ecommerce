@@ -212,7 +212,7 @@ const ProductSinglePage = () => {
                                 </SwiperSlide>
                             })}
 
-                            <SwiperSlide className='w-16 !h-0 select-none' />
+                            <SwiperSlide className='w-16 h-0! select-none' />
 
                             {/* <button className="custom-swiper-button-prev absolute -top-8 left-1/2 -translate-x-1/2 z-10 text-black">↑</button>
                             <button className="custom-swiper-button-next absolute bottom-0 right-2 z-10">↓</button> */}
@@ -310,7 +310,7 @@ const ProductSinglePage = () => {
                             {/* Add to Cart Button */}
                             <div className="flex space-x-4">
                                 <button
-                                    className="bg-blue-600 rounded-lg font-bold text-lg text-white flex-grow cursor-pointer active:brightness-75 duration-200"
+                                    className="bg-blue-600 rounded-lg font-bold text-lg text-white grow cursor-pointer active:brightness-75 duration-200"
                                     disabled={!product.inStock}
                                     onClick={handleAddToCart}
                                     ref={imgRef}
