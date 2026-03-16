@@ -25,6 +25,7 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.2",
+    "ora": "^9.3.0",
     "path": "^0.12.7",
     "puppeteer": "^24.3.0",
     "redis": "^4.7.0"
