@@ -30,7 +30,7 @@ const AboutPage = () => {
               About Us
             </h1>
             <p className="mt-6 max-w-2xl mx-auto text-xl text-gray-500 leading-relaxed">
-              We are passionate about delivering the highest quality products right to your doorstep. 
+              We are passionate about delivering the highest quality products right to your doorstep.
               Discover our story and explore the curated collections that make us unique.
             </p>
           </div>
@@ -41,14 +41,14 @@ const AboutPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="prose prose-lg prose-indigo mx-auto text-gray-500 mb-24">
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
             reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
           </p>
           <p>
-            Sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. 
-            Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna 
-            felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. 
+            Sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus.
+            Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna
+            felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula.
             Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula eu tempor congue, eros est euismod turpis.
           </p>
         </div>
@@ -65,7 +65,7 @@ const AboutPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {products.map((product, index) => (
               <div key={index} className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ring-1 ring-gray-900/5">
-                <div className="aspect-[4/5] overflow-hidden bg-gray-200">
+                <div className="aspect-4/5 overflow-hidden bg-gray-200">
                   <img
                     src={product.image}
                     alt={product.title}

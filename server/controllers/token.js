@@ -1,9 +1,6 @@
 import jwt from 'jsonwebtoken'
-import { config } from 'dotenv'
 import bcryptjs from 'bcryptjs'
 import RefreshToken from '../models/refreshToken.js'
-
-config()
 
 export const generateAccessToken = user => {
     return jwt.sign({ id: user.id, role: user.role }, Bun.env.SECRET_ACCESS_TOKEN, {
