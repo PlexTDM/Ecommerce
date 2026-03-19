@@ -15,7 +15,7 @@ const HomePage = () => {
     useEffect(() => {
         if (homeProducts) return
         setLoading(true)
-        axios.get(`${import.meta.env.VITE_FRONT_END_API}/products/1?limit=5`).then(res => {
+        axios.get(`${import.meta.env.VITE_BACK_END_API}/products/1?limit=5`).then(res => {
             setHomeProducts(res.data.products)
             console.log('fetched')
         }).catch(err => {

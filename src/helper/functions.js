@@ -34,6 +34,7 @@ export const totalVotes = ratings => {
 }
 
 export const parseUrlParts = (url, size) => {
+    if (!url) return ""
     if (size) {
         return url.replace(/\/ex\/\d+\.\d+\//, `/ex/${size}/`)
     }

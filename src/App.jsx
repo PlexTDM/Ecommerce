@@ -12,11 +12,13 @@ import {
   PageNotFound,
   Home,
   Product,
+  Categories,
 } from "./pages"
 import ScrollToTop from "./components/ScrollToTop"
 import { Toaster } from "react-hot-toast"
 import { ProductsProvider } from "./context/ProductsContext"
 import { Footer, Navbar } from "./components"
+import Profile from "./pages/Profile"
 
 const App = () => {
   return (
@@ -30,9 +32,11 @@ const App = () => {
               <Route path="/products" element={<Products />} />
               <Route path="/products/:page" element={<Products />} />
               <Route path="/product/:id" element={<Product />} />
+              <Route path="/categories" element={<Categories />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/account" element={<Profile />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/checkout" element={<Checkout />} />

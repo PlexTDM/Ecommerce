@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useState, useEffect, useRef } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
-import { parseUrlParts, getFullImage, calculateAverageRating, totalVotes } from '../helper/functions'
+import { getFullImage } from '../helper/functions'
 import { EasyZoomOnHover } from "easy-magnify"
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -9,15 +9,15 @@ import "../custom-swiper.css"
 import { useDispatch } from 'react-redux'
 import { addCart } from "../redux/action"
 import { animate } from "motion/react"
-import { Loading } from '../components'
+import { Loading, StarVotes } from '../components'
 
 const ProductSinglePage = () => {
 
-    const frontURL = import.meta.env.VITE_FRONT_END_API
+    const frontURL = import.meta.env.VITE_BACK_END_API
 
+    // location.state reusing data fetched from Products.jsx instead of refetching
     const location = useLocation()
-
-    const { productData } = location.state
+    const { productData } = location?.state || {}
 
     const cartRef = useRef(null)
     const { id } = useParams()
@@ -47,14 +47,14 @@ const ProductSinglePage = () => {
         setRelatedLoading(true)
         setLoading(true)
         if (productData) {
-            console.log('pdata')
             setProduct(productData)
+            console.log('got data from state? forgot', location)
             setLoading(false)
             setMainImage(productData.image)
 
             if (!relatedProducts || relatedProducts.length === 0) {
                 setRelatedLoading(true)
-                axios.get(`${frontURL}/products/random/?limit=6&tag=${productData.tags[0]}`).then(res => {
+                axios.get(`${frontURL}/products/random?limit=6&tag=${productData.tags[0]}`).then(res => {
                     setRelatedProducts(res.data)
                 }).catch(err => {
                     console.error('getRelatedProductsError', err)
@@ -68,7 +68,7 @@ const ProductSinglePage = () => {
                 setProduct(res.data)
                 setMainImage(res.data.image)
                 setRelatedLoading(true)
-                axios.get(`${frontURL}/products/random/?limit=6&tag=${res.data.tags[0]}`).then(res => {
+                axios.get(`${frontURL}/products/random?limit=6&tag=${res.data.tags[0]}`).then(res => {
                     setRelatedProducts(res.data)
                 }).catch(err => {
                     console.error('getRelatedProductsError', err)
@@ -205,6 +205,7 @@ const ProductSinglePage = () => {
                                     <img
                                         src={src}
                                         alt={`Thumbnail ${i + 1}`}
+                                        loading='lazy'
                                         className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 ${mainImage === src ? "border-blue-500" : "border-transparent"
                                             }`}
                                         onClick={() => setMainImage(src)}
@@ -227,12 +228,12 @@ const ProductSinglePage = () => {
                                 <EasyZoomOnHover {...{
                                     mainImage: {
                                         alt: product.title,
-                                        src: getFullImage(mainImage, mediumImg)
+                                        src: getFullImage(mainImage, mediumImg),
                                     },
                                     zoomImage: {
                                         src: getFullImage(mainImage, largeImg),
                                     },
-                                    zoomLensScale: 1.8,
+                                    zoomLensScale: 2,
                                     zoomContainerWidth: 500,
                                     zoomContainerHeight: 600,
                                     distance: 1
@@ -248,22 +249,7 @@ const ProductSinglePage = () => {
                         <div>
                             <h1 className="text-2xl md:text-3xl font-bold text-text mb-2">{product.title}</h1>
                             {/* rating | stars */}
-                            <div className="flex items-center mb-2">
-                                <div className="flex items-center">
-                                    {[...Array(5)].map((_, i) => (
-                                        <svg
-                                            key={i}
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className={`h-6 w-6 ${i < Math.floor(calculateAverageRating(product.ratings)) ? 'text-yellow-400' : 'text-gray-300'}`}
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    ))}
-                                </div>
-                                <span className="text-gray-500 text-xs ml-1">({totalVotes(product.ratings)})</span>
-                            </div>
+                            <StarVotes product={product} />
 
                             <p className="text-3xl font-bold text-primary mb-6">${product.price}</p>
 
@@ -360,22 +346,7 @@ const ProductSinglePage = () => {
                                 <div className="p-4">
                                     <h3 className="text-lg font-semibold text-text mb-1 truncate">{product.title}</h3>
 
-                                    <div className="flex items-center mb-2">
-                                        <div className="flex items-center">
-                                            {[...Array(5)].map((_, i) => (
-                                                <svg
-                                                    key={i}
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className={`h-4 w-4 ${i < Math.floor(calculateAverageRating(product.ratings)) ? 'text-yellow-400' : 'text-gray-300'}`}
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                </svg>
-                                            ))}
-                                        </div>
-                                        <span className="text-gray-500 text-xs ml-1">({totalVotes(product.ratings)})</span>
-                                    </div>
+                                    <StarVotes product={product} />
 
                                     <span className="text-primary font-bold">${product.price.toFixed(2)}</span>
                                 </div>

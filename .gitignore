@@ -3,8 +3,13 @@ logs
 *.log
 npm-debug.log*
 
+out
+dist
+*.tgz
+
 build/Release
 
+.vscode/
 node_modules/
 package-lock.json
 bun.lock
@@ -30,12 +35,7 @@ bun.lock
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
-<<<<<<< HEAD
 .env
-=======
-# .env
->>>>>>> 9ac638e (update gitignore)
 # .env.development.local
 # .env.test.local
 # .env.production.local

@@ -173,7 +173,7 @@ PAYPAL_CLIENT_SECRET=your_paypal_client_secret
 PORT=8888
 SECRET_ACCESS_TOKEN=your_access_token_secret
 SECRET_REFRESH_TOKEN=your_refresh_token_secret
-VITE_FRONT_END_API=http://localhost:8888
+VITE_BACK_END_API=http://localhost:8888
 ```
 
 **Backend** (`server/.env`):

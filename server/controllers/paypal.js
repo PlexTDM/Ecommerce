@@ -1,10 +1,10 @@
 import axios from 'axios';
-import express from 'express';
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+import { Hono } from 'hono';
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = Bun.env;
 
 const base = "https://api-m.sandbox.paypal.com";
 
-const app = express.Router();
+const app = new Hono();
 
 const generateAccessToken = async () => {
     try {
@@ -82,25 +82,25 @@ async function handleResponse(response) {
     }
 }
 
-app.post("/api/orders", async (req, res) => {
+app.post("/api/orders", async (c) => {
     try {
-        const { cart } = req.body;
+        const { cart } = await c.req.parseBody();
         const { jsonResponse, httpStatusCode } = await createOrder(cart);
-        res.status(httpStatusCode).json(jsonResponse);
+        return c.json(jsonResponse, httpStatusCode);
     } catch (error) {
         console.error("Failed to create order:", error);
-        res.status(500).json({ error: "Failed to create order." });
+        return c.json({ error: "Failed to create order." }, 500);
     }
 });
 
-app.post("/api/orders/:orderID/capture", async (req, res) => {
+app.post("/api/orders/:orderID/capture", async (c) => {
     try {
-        const { orderID } = req.params;
+        const { orderID } = c.req.param();
         const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
-        res.status(httpStatusCode).json(jsonResponse);
+        return c.json(jsonResponse, httpStatusCode);
     } catch (error) {
         console.error("Failed to capture order:", error);
-        res.status(500).json({ error: "Failed to capture order." });
+        return c.json({ error: "Failed to capture order." }, 500);
     }
 });
 

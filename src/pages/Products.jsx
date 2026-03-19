@@ -3,7 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { addCart } from "../redux/action"
 import axios from 'axios'
-import { SideSearchBar, Pagination, Loading } from "../components"
+import { SideSearchBar, Pagination, Loading, StarVotes } from "../components"
 import { animate, motion } from "motion/react"
 import { parseUrlParts } from '../helper/functions'
 
@@ -45,7 +45,7 @@ const Product = () => {
       return
     }
 
-    axios.get(`${import.meta.env.VITE_FRONT_END_API}/products/${page}`)
+    axios.get(`${import.meta.env.VITE_BACK_END_API}/products/${page}`)
       .then(res => {
         setPages(res.data.totalPages)
         setProducts(res.data.products)
@@ -65,7 +65,7 @@ const Product = () => {
     if (!searchParams.get('q')) return
     setLoading(true)
     setProducts([])
-    axios.get(`${import.meta.env.VITE_FRONT_END_API}/products/${1}?q=${searchParams.get('q')}`)
+    axios.get(`${import.meta.env.VITE_BACK_END_API}/products/${1}?q=${searchParams.get('q')}`)
       .then(res => {
         setPages(res.data.totalPages)
         setProductsPage(res.data.prodcuts)
@@ -91,7 +91,7 @@ const Product = () => {
     console.log(queryString)
     setLoading(true)
     setProducts([])
-    axios.get(`${import.meta.env.VITE_FRONT_END_API}/products/${1}?${queryString}`).then(res => {
+    axios.get(`${import.meta.env.VITE_BACK_END_API}/products/${1}?${queryString}`).then(res => {
       console.log(res)
       setPages(res.data.totalPages)
       setProducts(res.data.products)
@@ -162,7 +162,7 @@ const Product = () => {
     }
 
     return (
-      <div className="border border-gray-200 relative rounded-md shadow-xl hover:shadow-sh2 duration-200 text-sm xl:text-base group">
+      <div className="border border-gray-200 p-2 max-h-[350px] relative rounded-md shadow-xl hover:shadow-sh2 duration-200 text-sm xl:text-base group">
 
         {/* img */}
         <Link className="relative cursor-pointer min-h-[256px] w-full overflow-hidden" to={`/product/${product._id}`} state={{ productData: product }}>
@@ -178,24 +178,28 @@ const Product = () => {
           </div>}
         </Link>
 
-        <div className="p-4">
-          <Link to={`/products/${product._id}`} className="hover:text-gray-500 cursor-pointer duration-100">{product.title}</Link>
+        <div className="flex flex-col grow p-2">
+          <Link to={`/products/${product._id}`} className="hover:text-gray-500 max-w-full line-clamp-2 cursor-pointer duration-100">
+            {product.title}
+          </Link>
+
+
+          <StarVotes product={product} />
 
           {/* price */}
-          <div className="">
-            {product.discount ? (
+          {product.discount ? (
+            <div>
               <p className="line-through text-gray-500 text-sm">${product.price}</p>
-            ) : (
-              <p className="text-red-600">${product.price}</p>
-            )}
-          </div>
 
-          {/* discount */}
-          {product.discount && (
-            <p className="flex items-center gap-2 text-red-600">
-              ${Math.round(product.price * (1 - product.discount / 100) * 100) / 100}
-              <span className="text-xs">({product.discount}% OFF)</span>
-            </p>
+              <p className="flex items-center gap-2 text-red-600">
+                ${Math.round(product.price * (1 - product.discount / 100) * 100) / 100}
+                <span className="text-xs">({product.discount}% OFF)</span>
+              </p>
+            </div>
+          ) : (
+            <div className="mt-4">
+              <p className="text-red-600">${product.price}</p>
+            </div>
           )}
 
         </div>
@@ -214,7 +218,7 @@ const Product = () => {
     <>
       <div className="w-full px-6 md:8 lg:px-12 mx-auto mt-20 flex gap-4">
         <div className="w-full">
-          <div className="w-full grid max-[864px]:grid-cols-2 grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 justify-center">
+          <div className="w-full grid max-[864px]:grid-cols-2 grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 justify-center">
             {loading ?
               Array(20).fill(null).map((_, index) => (
                 <Loading key={index} />

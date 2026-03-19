@@ -38,7 +38,7 @@ const Navbar = () => {
                         </Link>
                     </div>
 
-                    <div className="hidden lg:flex items-center space-x-4 *:p-2 *:text-gray-500 *:hover:text-primary">
+                    <div className="hidden lg:flex items-center space-x-4">
                         <Link to="/cart" id='cart' className="p-2 text-gray-500 hover:text-primary relative group">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -51,6 +51,12 @@ const Navbar = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
+                        </Link>
+                        <Link to="/login" className="noEffect px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition">
+                            Login
+                        </Link>
+                        <Link to="/register" className="noEffect px-4 py-2 text-sm font-medium text-indigo-600 border border-indigo-600 rounded-md hover:bg-indigo-50 transition">
+                            Register
                         </Link>
                     </div>
 
@@ -77,25 +83,35 @@ const Navbar = () => {
                     <Link to="/about" className="block text-text hover:text-primary transition-colors max-w-[100px]">
                         About
                     </Link>
-                    <div className="flex items-center space-x-4 pt-4 border-t border-gray-200">
-                        <Link to={'/search'} className="p-2 text-gray-500 hover:text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </Link>
-                        <Link to="/cart" className="p-2 text-gray-500 hover:text-primary relative group">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            <span className="absolute opacity-80 group-hover:opacity-100 duration-200 -top-1 -right-1 bg-orange-400 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                                {state.length}
-                            </span>
-                        </Link>
-                        <Link to="/account" className="p-2 text-gray-500 hover:text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </Link>
+                    <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                        <div className="flex items-center space-x-4">
+                            <Link to={'/search'} className="p-2 text-gray-500 hover:text-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </Link>
+                            <Link to="/cart" className="p-2 text-gray-500 hover:text-primary relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                <span className="absolute opacity-80 group-hover:opacity-100 duration-200 -top-1 -right-1 bg-orange-400 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                    {state.length}
+                                </span>
+                            </Link>
+                            <Link to="/account" className="p-2 text-gray-500 hover:text-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </Link>
+                        </div>
+                        <div className="flex space-x-4 mt-6">
+                            <Link to="/login" className="w-full text-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition">
+                                Login
+                            </Link>
+                            <Link to="/register" className="w-full text-center px-4 py-2 text-sm font-medium text-indigo-600 border border-indigo-600 rounded-md hover:bg-indigo-50 transition">
+                                Register
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

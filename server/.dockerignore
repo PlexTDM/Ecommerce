@@ -1,2 +1,9 @@
 node_modules
 .env
+Dockerfile
+README.md
+LICENSE
+bun.lock
+bun.lockb
+*.log
+.DS_Store

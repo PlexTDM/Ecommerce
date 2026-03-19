@@ -1,15 +1,13 @@
-import express from 'express'
-import corsConfig from '../middleware/cors.js'
 import Product from '../models/product.js'
-import redisClient from '../middleware/cache.js'
+import { redis } from 'bun'
+import { Hono } from 'hono'
 
-const app = express.Router()
+const app = new Hono()
 
-app.use(corsConfig)
+app.get('/random', async (c) => {
 
-app.get('/random', async (req, res) => {
-
-    const { limit, tag } = req.query
+    const limit = c.req.query('limit') || 10
+    const tag = c.req.query('tag') || ''
 
     try {
         const randomProduct = await Product.aggregate([
@@ -17,45 +15,51 @@ app.get('/random', async (req, res) => {
             { $sample: { size: parseInt(limit) } }
         ])
 
-        if (!randomProduct) res.status(404).json({ error: 'No products found' })
+        if (!randomProduct) return c.json({ error: 'No products found' }, 404)
 
-        res.json(randomProduct)
+        return c.json(randomProduct, 200)
 
     } catch (err) {
         console.error('Error fetching filtered random product:', err)
-        res.status(500).json({ error: 'Failed to fetch filtered random product' })
+        return c.json({ error: 'Failed to fetch filtered random product' }, 500)
     }
 
 })
 
-app.get('/product/:id', async (req, res) => {
-    const { id } = req.params
+app.get('/product/:id', async (c) => {
+    const { id } = c.req.param()
 
     try {
-        const cachedProduct = await redisClient.get(`product:${id}`)
+        const cachedProduct = await redis.get(`product:${id}`)
         if (cachedProduct) {
-            return res.status(200).json(JSON.parse(cachedProduct))
+            return c.json(JSON.parse(cachedProduct), 200)
         }
 
         const product = await Product.findById(id)
         if (!product) {
-            return res.status(404).json({ error: 'Product not found' })
+            return c.json({ error: 'Product not found' }, 404)
         }
 
-        await redisClient.set(`product:${id}`, JSON.stringify(product))
-        console.log('product cached')
+        await redis.set(`product:${id}`, JSON.stringify(product))
 
-        res.status(200).json(product)
+        return c.json(product, 200)
     }
     catch (err) {
         console.error(err)
-        res.status(500).json({ error: 'Failed to fetch product' })
+        return c.json({ error: 'Failed to fetch product' }, 500)
     }
 })
 
-app.get('/:page', async (req, res) => {
-    const page = parseInt(req.params.page)
-    const { limit = 40, sort, price, discount, inStock, isNewProduct, q, tags } = req.query
+app.get('/:page', async (c) => {
+    const page = parseInt(c.req.param('page'))
+    const limit = parseInt(c.req.query('limit') || '40')
+    const sort = c.req.query('sort')
+    const price = c.req.query('price')
+    const discount = c.req.query('discount')
+    const inStock = c.req.query('inStock')
+    const isNewProduct = c.req.query('isNewProduct')
+    const q = c.req.query('q')
+    const tags = c.req.query('tags')
 
     let query = {}
     try {
@@ -76,11 +80,12 @@ app.get('/:page', async (req, res) => {
             ]
         }
 
-        const cacheKey = `products:page:${page}:${JSON.stringify(req.query)}`
-        const cachedProducts = await redisClient.get(cacheKey)
+        const cacheKey = `products:page:${page}:${JSON.stringify(c.req.query())}`
+        const cachedProducts = Bun.env.NODE_ENV === 'test' ? null : await (redis ? redis.get(cacheKey) : null)
+
 
         if (cachedProducts) {
-            return res.json(JSON.parse(cachedProducts))
+            return c.json(JSON.parse(cachedProducts), 200)
         }
 
         const products = await Product.find(query)
@@ -110,12 +115,14 @@ app.get('/:page', async (req, res) => {
             totalProducts,
             products,
         }
-        await redisClient.set(cacheKey, JSON.stringify(response))
-        res.json(response)
+        if (redis) {
+            await redis.set(cacheKey, JSON.stringify(response))
+        }
+        return c.json(response, 200)
 
     } catch (error) {
         console.error("Error in /products/:page", error)
-        res.status(500).json({ error: 'Failed to fetch products' })
+        return c.json({ error: 'Failed to fetch products' }, 500)
     }
 })
 

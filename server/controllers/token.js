@@ -6,13 +6,13 @@ import RefreshToken from '../models/refreshToken.js'
 config()
 
 export const generateAccessToken = user => {
-    return jwt.sign({ id: user.id, role: user.role }, process.env.SECRET_ACCESS_TOKEN, {
+    return jwt.sign({ id: user.id, role: user.role }, Bun.env.SECRET_ACCESS_TOKEN, {
         expiresIn: '1d'
     })
 }
 
 export const generateRefreshToken = async user => {
-    const refreshToken = jwt.sign({ id: user.id, role: user.role }, process.env.SECRET_REFRESH_TOKEN, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id: user.id, role: user.role }, Bun.env.SECRET_REFRESH_TOKEN, { expiresIn: "7d" });
     const hashedToken = await bcryptjs.hash(refreshToken, 10);
 
     await RefreshToken.create({
@@ -24,24 +24,25 @@ export const generateRefreshToken = async user => {
     return refreshToken
 }
 
-export const authenticate = (req, res, next) => {
-    const token = req.header("Authorization")?.replace("Bearer ", "");
+export const authenticate = async (c, next) => {
+    const token = c.req.header("Authorization")?.replace("Bearer ", "");
 
-    if (!token) return res.status(401).json({ message: "No token provided" });
+    if (!token) return c.json({ message: "No token provided" }, 401);
 
     try {
-        const decoded = jwt.verify(token, process.env.SECRET_ACCESS_TOKEN);
-        req.user = decoded
-        next()
+        const decoded = jwt.verify(token, Bun.env.SECRET_ACCESS_TOKEN);
+        c.set('user', decoded)
+        await next()
     } catch (error) {
-        console.error(error);
-        res.status(401).json({ message: "Invalid or expired token" });
+        console.error('auth middleware', error);
+        return c.json({ message: "Invalid or expired token" }, 401);
     }
 }
 
 export const authorizeRole = role => {
-    return (req, res, next) => {
-        if (req.user.role !== role) return res.status(403).json({ error: "Forbidden" });
-        next();
+    return async (c, next) => {
+        const user = c.get('user')
+        if (!user || user.role !== role) return c.json({ error: "Forbidden" }, 403);
+        await next();
     };
 }
