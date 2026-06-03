@@ -48,7 +48,6 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
-            <Search />
             <Link
               to="/"
               className="text-text hover:text-primary transition-colors"
@@ -67,6 +66,7 @@ const Navbar = () => {
             >
               Categories
             </Link>
+            <Search />
             {/* <Link
               to="/about"
               className="text-text hover:text-primary transition-colors"

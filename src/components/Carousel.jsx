@@ -13,7 +13,7 @@ const images = [
 
 const Carousel = () => {
     return (
-        <div className="w-full flex h-[350px] gap-4">
+        <div className="w-full flex h-87.5 gap-4">
             <div className="max-w-5xl">
                 <Swiper
                     modules={[Controller, Pagination, Autoplay]}
