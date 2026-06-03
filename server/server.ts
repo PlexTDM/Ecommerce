@@ -7,6 +7,7 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { RedisClient } from "bun";
 import Bun from "bun";
+import z from "zod";
 
 export const app = new Hono();
 
@@ -16,6 +17,23 @@ app.use(limiter);
 app.route("/", router);
 
 const PORT = Bun.env.PORT || 3000;
+
+const envSchema = z.object({
+  MONGO_URI: z.string().nonempty(),
+  SECRET_ACCESS_TOKEN: z.string().nonempty(),
+  SECRET_REFRESH_TOKEN: z.string().nonempty(),
+  PAYPAL_CLIENT_ID: z.string().nonempty(),
+  PAYPAL_CLIENT_SECRET: z.string().nonempty(),
+});
+
+const result = envSchema.safeParse(Bun.env);
+if (!result.success) {
+  console.error(
+    "Environment variable validation failed:",
+    z.flattenError(result.error),
+  );
+  process.exit(1);
+}
 
 if (import.meta.path === Bun.main) {
   const spinner = ora({

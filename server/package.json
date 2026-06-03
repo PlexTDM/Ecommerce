@@ -21,7 +21,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.2",
     "ora": "^9.3.0",
-    "redis": "^4.7.0"
+    "redis": "^4.7.0",
+    "zod": "^4.4.3"
   },
   "private": true,
   "devDependencies": {

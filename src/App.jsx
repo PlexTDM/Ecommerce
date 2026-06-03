@@ -14,11 +14,11 @@ import {
   Product,
   Categories,
 } from "./pages"
-import ScrollToTop from "./components/ScrollToTop"
+import ScrollToTop from "@/components/ScrollToTop"
 import { Toaster } from "react-hot-toast"
-import { ProductsProvider } from "./context/ProductsContext"
-import { Footer, Navbar } from "./components"
-import Profile from "./pages/Profile"
+import { ProductsProvider } from "@/context/ProductsContext.tsx"
+import { Footer, Navbar } from "@/components"
+import Profile from "@/pages/Profile"
 
 const App = () => {
   return (

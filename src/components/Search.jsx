@@ -1,73 +1,238 @@
-import { useRef, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useRef, useEffect, useContext, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "motion/react";
+import { ProductsContext } from "../context/ProductsContext";
+
 const Search = () => {
+    const navigate = useNavigate();
+    const { searchProducts, products, productsLoading } = useContext(ProductsContext);
 
-    const navigate = useNavigate()
-    const [search, setSearch] = useState('')
-    const [dropdown, setDropdown] = useState(false)
-    const searchRef = useRef(null)
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState("");
+    const [results, setResults] = useState([]);
+    const inputRef = useRef(null);
+    const debounceRef = useRef(null);
 
-    const handelSearch = (e) => {
-        e.preventDefault()
-        navigate({
-            pathname: '/products',
-            search: `?q=${search}`
-        })
-    }
-
-    const handleBtn = (e) => {
-        e.preventDefault()
-        setDropdown(false)
-        navigate(`/products/?tags=${e.target.value}`)
-    }
-
-    window.addEventListener('click', (e) => {
-        if (searchRef.current && !searchRef.current.contains(e.target)) {
-            setDropdown(false)
+    // Auto-focus
+    useEffect(() => {
+        if (open && inputRef.current) {
+            inputRef.current.focus();
         }
-    })
+    }, [open]);
 
+    // Esc to close
+    useEffect(() => {
+        const handleKey = (e) => {
+            if (e.key === "Escape") {
+                setOpen(false);
+                setQuery("");
+                setResults([]);
+            }
+        };
+        if (open) {
+            window.addEventListener("keydown", handleKey);
+            return () => window.removeEventListener("keydown", handleKey);
+        }
+    }, [open]);
+
+    // Debounced search as user types
+    const handleInputChange = useCallback(
+        (e) => {
+            const value = e.target.value;
+            setQuery(value);
+
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+
+            if (!value.trim()) {
+                setResults([]);
+                return;
+            }
+
+            debounceRef.current = setTimeout(async () => {
+                try {
+                    await searchProducts(value.trim());
+                } catch { }
+            }, 300);
+        },
+        [searchProducts],
+    );
+
+    useEffect(() => {
+        if (open && query.trim() && products) {
+            setResults(products.slice(0, 6));
+        } else if (!query.trim()) {
+            setResults([]);
+        }
+    }, [products, open, query]);
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter" && query.trim()) {
+            navigate(`/products?q=${encodeURIComponent(query.trim())}`);
+            closeModal();
+        }
+    };
+
+    const closeModal = () => {
+        setOpen(false);
+        setQuery("");
+        setResults([]);
+    };
+
+    const handleResultClick = (product) => {
+        navigate(`/product/${product._id}`, { state: { productData: product } });
+        closeModal();
+    };
+
+    const handleBackdropClick = (e) => {
+        if (e.target === e.currentTarget) {
+            closeModal();
+        }
+    };
 
     return (
-        <form className="max-w-lg mx-auto px-4 overflow-visible" ref={searchRef}>
-            <div className="flex relative">
-                <label htmlFor="search-dropdown" className="mb-2 text-lg font-medium text-gray-900 sr-only">Your Email</label>
-                <button onClick={() => setDropdown(!dropdown)} className="shrink-0 z-10 cursor-pointer inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100" type="button">
-                    <p>All categories</p>
-                    <svg className="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
-                    </svg>
-                </button>
+        <>
+            <button
+                onClick={() => setOpen(true)}
+                className="p-2 text-gray-500 hover:text-primary transition-colors"
+                aria-label="Search"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                </svg>
+            </button>
 
-                <div className={`${!dropdown && 'hidden'} z-[60] absolute top-full mt-2 bg-white rounded-lg shadow-sm w-44 border-y border-gray-300 overflow-hidden`}>
-                    <ul className="text-lg text-gray-700 divide-y **:cursor-pointer divide-gray-300 *:inline-flex *:w-full *:px-4 *:py-2 *:hover:bg-gray-100">
-                        <li>
-                            <button type="button" onClick={handleBtn} value={'Chibi Figures'}>Chibi Figures</button>
-                        </li>
-                        <li>
-                            <button type="button" onClick={handleBtn} value={'Nendoroid'}>Nendoroid & Mini Figures</button>
-                        </li>
-                        <li>
-                            <button type="button" onClick={handleBtn} value={'Scale Figures'}>Scale Figures</button>
-                        </li>
-                        <li>
-                            <button type="button" onClick={handleBtn} value={'Action Figures'}>Action Figures</button>
-                        </li>
-                    </ul>
-                </div>
+            {createPortal(
+                <AnimatePresence>
+                    {open && (
+                        <motion.div
+                            className="fixed inset-0 z-9999 flex justify-center pt-24 px-4"
+                            style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+                            onClick={handleBackdropClick}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <motion.div
+                                className="w-full max-w-xl h-fit"
+                                onClick={(e) => e.stopPropagation()}
+                                initial={{ opacity: 0, y: -30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -30 }}
+                                transition={{ duration: 0.25, ease: "easeOut" }}
+                            >
+                                {/* Search bar */}
+                                <div className="relative">
+                                    <div className="flex items-center bg-white rounded-lg shadow-2xl">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-5 w-5 ml-4 text-gray-400 shrink-0"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                            />
+                                        </svg>
+                                        <input
+                                            ref={inputRef}
+                                            type="text"
+                                            value={query}
+                                            onChange={handleInputChange}
+                                            onKeyDown={handleKeyDown}
+                                            placeholder="Search products..."
+                                            className="w-full p-4 text-lg text-gray-900 bg-transparent outline-none rounded-lg"
+                                        />
+                                        <button
+                                            onClick={closeModal}
+                                            className="p-4 text-gray-400 hover:text-gray-600 shrink-0"
+                                            aria-label="Close search"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-5 w-5"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
 
-                <div className="relative w-full">
-                    <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} name="search" className="block p-2.5 w-full z-20 text-base text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Search" required />
-                    <button type="submit" onClick={handelSearch} className="absolute top-0 end-0 p-2.5 text-base font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
-                        <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </form>
+                                    {/* Results dropdown */}
+                                    {query.trim() && (
+                                        <div className="bg-white mt-1 rounded-lg shadow-2xl overflow-hidden">
+                                            {productsLoading ? (
+                                                <div className="p-6 text-center text-gray-500">
+                                                    <div className="animate-spin inline-block w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full" />
+                                                    <span className="ml-2">Searching...</span>
+                                                </div>
+                                            ) : results.length > 0 ? (
+                                                <ul className="divide-y divide-gray-100">
+                                                    {results.map((product) => (
+                                                        <li key={product._id}>
+                                                            <button
+                                                                onClick={() => handleResultClick(product)}
+                                                                className="w-full flex items-center gap-4 p-3 hover:bg-gray-50 transition-colors text-left
+                                                                cursor-pointer"
+                                                            >
+                                                                <img
+                                                                    src={product.image}
+                                                                    alt={product.title}
+                                                                    className="w-12 h-12 object-cover rounded shrink-0"
+                                                                />
+                                                                <div className="min-w-0 flex-1">
+                                                                    <p className="text-sm font-medium text-gray-900 truncate">
+                                                                        {product.title}
+                                                                    </p>
+                                                                    <p className="text-sm text-red-600">
+                                                                        ${product.price}
+                                                                    </p>
+                                                                </div>
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            ) : (
+                                                <div className="p-6 text-center text-gray-500">
+                                                    {query.trim()
+                                                        ? "No results found"
+                                                        : "Type to search..."}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                document.body,
+            )}
+        </>
+    );
+};
 
-    )
-}
-
-export default Search
+export default Search;

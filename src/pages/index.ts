@@ -1,0 +1,11 @@
+export { default as Home } from "./HomePage.tsx";
+export { default as Products } from "./Products.tsx";
+export { default as AboutPage } from "./AboutPage.jsx";
+export { default as ContactPage } from "./ContactPage.jsx";
+export { default as Cart } from "./Cart.jsx";
+export { default as Login } from "./Login.tsx";
+export { default as Register } from "./Register.tsx";
+export { default as Checkout } from "./Checkout.jsx";
+export { default as PageNotFound } from "./PageNotFound.tsx";
+export { default as Product } from "./ProductSinglePage.tsx";
+export { default as Categories } from "./Categories.jsx";

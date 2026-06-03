@@ -1,40 +1,44 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const Checkout = () => {
-  const cart = useSelector((state) => state.cart.items)
+  const cart = useSelector((state: RootState) => state.handleCart);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    country: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: ''
-  })
+    firstName: "",
+    lastName: "",
+    email: "",
+    address: "",
+    city: "",
+    postalCode: "",
+    country: "",
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+  });
 
   const calculateTotal = () => {
-    return cart.reduce((total, item) => {
-      const discountedPrice = item.price * (1 - (parseInt(item.discount) || 0) / 100)
-      return total + discountedPrice * item.qty
-    }, 0).toFixed(2)
-  }
+    return cart
+      .reduce((total, item) => {
+        const discountedPrice =
+          item.price * (1 - (parseInt(item.discount) || 0) / 100);
+        return total + discountedPrice * item.qty;
+      }, 0)
+      .toFixed(2);
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle payment processing here
-    console.log('Processing payment...', formData)
-  }
+    console.log("Processing payment...", formData);
+  };
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -44,11 +48,15 @@ const Checkout = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Shipping Information
+              </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">First Name</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      First Name
+                    </label>
                     <input
                       type="text"
                       name="firstName"
@@ -59,7 +67,9 @@ const Checkout = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Last Name
+                    </label>
                     <input
                       type="text"
                       name="lastName"
@@ -72,7 +82,9 @@ const Checkout = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Email
+                  </label>
                   <input
                     type="email"
                     name="email"
@@ -84,7 +96,9 @@ const Checkout = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Address</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Address
+                  </label>
                   <input
                     type="text"
                     name="address"
@@ -97,7 +111,9 @@ const Checkout = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">City</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      City
+                    </label>
                     <input
                       type="text"
                       name="city"
@@ -108,7 +124,9 @@ const Checkout = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Postal Code</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Postal Code
+                    </label>
                     <input
                       type="text"
                       name="postalCode"
@@ -123,10 +141,14 @@ const Checkout = () => {
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Payment Information</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Payment Information
+              </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Card Number</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Card Number
+                  </label>
                   <input
                     type="text"
                     name="cardNumber"
@@ -139,7 +161,9 @@ const Checkout = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Expiry Date
+                    </label>
                     <input
                       type="text"
                       name="expiryDate"
@@ -151,7 +175,9 @@ const Checkout = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">CVV</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      CVV
+                    </label>
                     <input
                       type="text"
                       name="cvv"
@@ -182,7 +208,12 @@ const Checkout = () => {
                       <p className="text-sm text-gray-500">Qty: {item.qty}</p>
                     </div>
                     <span className="text-sm font-medium">
-                      ${(item.price * (1 - (parseInt(item.discount) || 0) / 100) * item.qty).toFixed(2)}
+                      $
+                      {(
+                        item.price *
+                        (1 - (parseInt(item.discount) || 0) / 100) *
+                        item.qty
+                      ).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -206,7 +237,7 @@ const Checkout = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Checkout
+export default Checkout;
