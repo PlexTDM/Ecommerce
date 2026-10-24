@@ -215,6 +215,7 @@ is a working alias of `/products/:page` (query `page` instead of the path segmen
 - [x] Regex escaping, DOMPurify sanitization, secure headers, scoped rate limits.
 - [x] MUI/FontAwesome removed; local Tailwind components, inline SVGs, `srcSet` images.
 - [x] Working `/products/search` alias.
+- [x] Modern mobile navigation sheet with search/cart shortcuts and route-aware links.
 
 ### Next
 
