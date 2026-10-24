@@ -2,7 +2,7 @@ import { expect, type Page } from "@playwright/test";
 import type { Order, Product, ProductsResponse, Profile, PublicUser } from "../src/types";
 
 const pixel =
-  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='4'><rect width='4' height='4' fill='%236366f1'/></svg>";
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='600'><rect width='500' height='600' fill='%236366f1'/></svg>";
 
 export const galleryImages = Array.from({ length: 10 }, (_, index) => `raiden-${index + 1}.jpg`);
 
@@ -106,7 +106,7 @@ export async function mockProductsApi(
       status: 200,
       contentType: "image/svg+xml",
       headers: { "Cache-Control": "public, max-age=3600" },
-      body: "<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect width='64' height='64' fill='#a5b4fc'/></svg>",
+      body: "<svg xmlns='http://www.w3.org/2000/svg' width='500' height='600'><rect width='500' height='600' fill='#a5b4fc'/></svg>",
     });
   });
 

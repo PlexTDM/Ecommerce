@@ -24,6 +24,17 @@ const THUMBNAIL_SOURCES: readonly ImageVariant[] = [
   { width: 128, size: "128.128" },
 ];
 
+const MAIN_IMAGE_WIDTH = 500;
+const MAIN_IMAGE_HEIGHT = 600;
+const MEDIUM_IMAGE_SIZE = `${MAIN_IMAGE_WIDTH}.${MAIN_IMAGE_HEIGHT}`;
+
+// The CDN fits images inside the requested box without cropping, so these are
+// maximum dimensions, not the displayed aspect ratio. The zoom component reads
+// the loaded image's natural size to keep the lens and zoom view aligned.
+const ZOOM_IMAGE_WIDTH = 2000;
+const ZOOM_IMAGE_HEIGHT = Math.round(ZOOM_IMAGE_WIDTH * (MAIN_IMAGE_HEIGHT / MAIN_IMAGE_WIDTH));
+const ZOOM_IMAGE_SIZE = `${ZOOM_IMAGE_WIDTH}.${ZOOM_IMAGE_HEIGHT}`;
+
 const RELATED_IMAGE_SOURCES: readonly ImageVariant[] = [
   { width: 256, size: "256.256" },
   { width: 400, size: "400.400" },
@@ -88,7 +99,7 @@ const ProductSinglePage = () => {
   const mainImage = activeProduct
     ? selectedImage && selectedImage.productId === activeProduct._id
       ? selectedImage.src
-      : activeProduct.image
+      : toGalleryImage(activeProduct.image)
     : null;
   const selectedIndex = mainImage ? galleryImages.indexOf(toGalleryImage(mainImage)) : -1;
   const currentImageIndex = selectedIndex >= 0 ? selectedIndex : galleryImages.length > 0 ? 0 : -1;
@@ -106,9 +117,6 @@ const ProductSinglePage = () => {
 
   const [isFlying, setIsFlying] = useState(false);
   const imgRef = useRef<HTMLButtonElement>(null);
-
-  const mediumImg = "500.600";
-  const largeImg = "1668.2500";
 
   const addProduct = (product: Product) => {
     dispatch(addCart(product));
@@ -140,7 +148,7 @@ const ProductSinglePage = () => {
 
     const sources = [activeProduct.image, ...(activeProduct.moreImages ?? [])].map(toGalleryImage);
 
-    sources.forEach((src) => preloadImage(getFullImage(src, mediumImg)));
+    sources.forEach((src) => preloadImage(getFullImage(src, MEDIUM_IMAGE_SIZE)));
   }, [activeProduct]);
 
   // Only warm the high-resolution zoom image for the current selection.
@@ -148,7 +156,7 @@ const ProductSinglePage = () => {
   useEffect(() => {
     if (!mainImage) return;
 
-    preloadImage(getFullImage(mainImage, largeImg), "high");
+    preloadImage(getFullImage(mainImage, ZOOM_IMAGE_SIZE), "high");
   }, [mainImage]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -319,23 +327,19 @@ const ProductSinglePage = () => {
               </button>
             </div>
 
-            <div className="mb-4 relative z-40 h-150 min-w-125">
+            <div className="mb-4 relative z-40 flex h-150 min-w-125 items-center">
               {mainImage && (
                 <EasyZoomOnHover
                   key={activeProduct._id}
                   delayTimer={0}
                   mainImage={{
                     alt: activeProduct.title,
-                    src: getFullImage(mainImage, mediumImg),
-                    width: 500,
-                    height: 600,
+                    src: getFullImage(mainImage, MEDIUM_IMAGE_SIZE),
                   }}
                   zoomImage={{
-                    src: getFullImage(mainImage, largeImg),
+                    src: getFullImage(mainImage, ZOOM_IMAGE_SIZE),
                   }}
                   zoomFactor={2.5}
-                  zoomContainerWidth={500}
-                  zoomContainerHeight={600}
                   distance={1}
                   loadingIndicator={<ProductImageSkeleton />}
                 />

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import type { Product } from "../src/types";
 import {
   expectPageHeading,
   expectProductVisible,
@@ -84,6 +85,40 @@ test.describe("storefront", () => {
 
     await expect(page).toHaveURL(/\/products\?q=makima$/, { timeout: 2_000 });
     await expect(search).toHaveValue("makima");
+  });
+
+  test("zoom keeps the source image aspect ratio", async ({ page }) => {
+    const wideProduct: Product = {
+      ...testProduct,
+      _id: "wide-product",
+      id: "wide-product",
+      title: "Wide Figure",
+      image: "wide.jpg",
+      moreImages: [],
+    };
+
+    await mockProductsApi(page, [wideProduct]);
+
+    // Return 2:1 images sized from the requested width, like the real CDN.
+    await page.route(/resize\.cdn\.otakumode\.com\/ex\/(\d+)\.(\d+)\//, async (route) => {
+      const match = /\/ex\/(\d+)\.(\d+)\//.exec(route.request().url());
+      const width = Number(match?.[1] ?? 500);
+      const height = Math.round(width / 2);
+
+      await route.fulfill({
+        status: 200,
+        contentType: "image/svg+xml",
+        body: `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'><rect width='${width}' height='${height}' fill='#a5b4fc'/></svg>`,
+      });
+    });
+
+    await page.goto(`/product/${wideProduct._id}`);
+
+    const container = page.locator(".EasyZoomImageHoverMainContainer").first();
+
+    await expect(container).toBeVisible();
+    await expect(container).toHaveCSS("width", "500px");
+    await expect(container).toHaveCSS("height", "250px");
   });
 
   test("gallery next/prev select the image and move the swiper", async ({ page }) => {
