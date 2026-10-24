@@ -23,12 +23,40 @@ test.describe("mobile navigation", () => {
 
     const dialog = page.getByRole("dialog", { name: "Mobile navigation" });
     await expect(dialog).toBeVisible();
+
+    const viewport = page.viewportSize();
+
+    expect(viewport).not.toBeNull();
+
+    if (viewport) {
+      // The sheet slides up from below; wait for the spring to settle.
+      await expect
+        .poll(async () => {
+          const settled = await dialog.boundingBox();
+          return settled ? Math.round(settled.y + settled.height) : 0;
+        })
+        .toBeLessThanOrEqual(viewport.height + 1);
+
+      const settled = await dialog.boundingBox();
+      expect(settled?.y ?? -1).toBeGreaterThanOrEqual(0);
+    }
+
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
     await expect(dialog.getByRole("link", { name: "Home", exact: true })).toBeVisible();
     await expect(dialog.getByRole("link", { name: "Sign in" })).toBeVisible();
 
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
+  });
+
+  test("home page does not overflow horizontally", async ({ page }) => {
+    await page.goto("/");
+
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    );
+
+    expect(overflow).toBeLessThanOrEqual(1);
   });
 
   test("navigates and marks the current route", async ({ page }) => {

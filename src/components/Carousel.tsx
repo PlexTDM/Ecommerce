@@ -6,10 +6,19 @@ import "swiper/css/pagination";
 
 const images = ["/poster0.jpg", "/poster1.jpg", "/poster8.jpg", "/poster9.jpg"];
 
+const thumbnails = [
+  "/poster3.jpg",
+  "/poster4.jpg",
+  "/poster5.jpg",
+  "/poster6.jpg",
+  "/poster7.jpg",
+  "/poster2.png",
+];
+
 const Carousel = () => {
   return (
-    <div className="w-full flex h-87.5 gap-4">
-      <div className="max-w-5xl">
+    <div className="flex h-87.5 w-full gap-4">
+      <div className="min-w-0 max-w-5xl flex-1">
         <Swiper
           modules={[Controller, Pagination, Autoplay]}
           spaceBetween={20}
@@ -17,26 +26,27 @@ const Carousel = () => {
           loop={true}
           autoplay={{ delay: 7000 }}
           pagination={{ clickable: true }}
-          className="rounded-lg shadow-lg h-full"
+          className="h-full w-full rounded-lg shadow-lg"
         >
           {images.map((img, index) => (
-            <SwiperSlide key={index}>
+            <SwiperSlide key={index} className="h-full">
               <img
                 src={img}
-                alt={`Slide ${index + 1}`}
-                className="w-full object-cover rounded-lg"
+                alt={`Featured anime banner ${index + 1}`}
+                className="h-full w-full object-cover"
               />
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
-      <div className="grid grid-row-3 grid-flow-row justify-between *:object-cover *:w-full rounded-lg overflow-hidden gap-2 overflow-y-scroll snap-y *:snap-center">
-        <img src="/poster3.jpg" />
-        <img src="/poster4.jpg" />
-        <img src="/poster5.jpg" />
-        <img src="/poster6.jpg" />
-        <img src="/poster7.jpg" />
-        <img src="/poster2.png" />
+
+      <div
+        aria-hidden="true"
+        className="hidden w-36 shrink-0 snap-y grid-flow-row gap-2 overflow-y-scroll rounded-lg *:w-full *:snap-center *:object-cover lg:grid lg:w-44"
+      >
+        {thumbnails.map((img) => (
+          <img key={img} src={img} alt="" loading="lazy" />
+        ))}
       </div>
     </div>
   );

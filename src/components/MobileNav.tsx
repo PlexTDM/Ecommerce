@@ -179,7 +179,7 @@ const MobileNav = ({
           {open && (
             <motion.div
               key="mobile-navigation"
-              className="fixed inset-0 z-70 lg:hidden"
+              className="fixed inset-0 z-70 flex h-dvh w-full items-end justify-center lg:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -208,7 +208,7 @@ const MobileNav = ({
                     ? { duration: 0 }
                     : { type: "spring", stiffness: 360, damping: 36 }
                 }
-                className="absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto rounded-t-[28px] bg-white pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-24px_60px_-20px_rgba(15,23,42,0.45)]"
+                className="relative max-h-[88dvh] w-full overflow-y-auto overscroll-contain rounded-t-[28px] bg-white pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-24px_60px_-20px_rgba(15,23,42,0.45)]"
               >
                 <div className="sticky top-0 z-10 bg-white/95 px-4 pt-3 backdrop-blur">
                   <div aria-hidden="true" className="mx-auto h-1.5 w-12 rounded-full bg-gray-200" />
