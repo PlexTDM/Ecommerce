@@ -34,7 +34,6 @@ const Product = () => {
   const searchQuery = searchParams.get("q")?.trim() ?? "";
   const [searchInput, setSearchInput] = useState(searchQuery);
   const [filters, setFilters] = useState<Record<string, string>>({});
-  const searchTimerRef = useRef<number | null>(null);
 
   const {
     products,
@@ -57,34 +56,6 @@ const Product = () => {
     setSearchInput(searchQuery);
   }, [searchQuery]);
 
-  // Debounce typing so the catalog and URL follow along after a short pause.
-  useEffect(() => {
-    const query = searchInput.trim();
-
-    if (query === searchQuery) return;
-
-    searchTimerRef.current = window.setTimeout(() => {
-      searchTimerRef.current = null;
-      void navigate(query ? `/products?q=${encodeURIComponent(query)}` : "/products", {
-        replace: true,
-      });
-    }, 300);
-
-    return () => {
-      if (searchTimerRef.current) {
-        window.clearTimeout(searchTimerRef.current);
-        searchTimerRef.current = null;
-      }
-    };
-  }, [navigate, searchInput, searchQuery]);
-
-  const clearPendingSearch = () => {
-    if (!searchTimerRef.current) return;
-
-    window.clearTimeout(searchTimerRef.current);
-    searchTimerRef.current = null;
-  };
-
   useEffect(() => {
     if (searchQuery) {
       void searchProducts(searchQuery);
@@ -95,7 +66,6 @@ const Product = () => {
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    clearPendingSearch();
 
     const query = searchInput.trim();
     void navigate(query ? `/products?q=${encodeURIComponent(query)}` : "/products", {
@@ -109,7 +79,6 @@ const Product = () => {
   };
 
   const clearSearch = () => {
-    clearPendingSearch();
     setSearchInput("");
 
     if (!searchQuery) return;
