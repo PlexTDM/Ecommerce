@@ -75,6 +75,17 @@ test.describe("storefront", () => {
     await expect(search).toHaveValue("");
   });
 
+  test("debounces search typing", async ({ page }) => {
+    await page.goto("/products");
+
+    const search = page.getByRole("searchbox", { name: "Search products" });
+
+    await search.fill("makima");
+
+    await expect(page).toHaveURL(/\/products\?q=makima$/, { timeout: 2_000 });
+    await expect(search).toHaveValue("makima");
+  });
+
   test("gallery next/prev select the image and move the swiper", async ({ page }) => {
     await page.goto(`/product/${testProduct._id}`);
 
