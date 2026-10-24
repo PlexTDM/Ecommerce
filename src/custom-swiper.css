@@ -1,35 +1,38 @@
-.swiper-vertical .swiper-button-next,
-.swiper-vertical .swiper-button-prev {
-	left: 50%;
-	transform: rotate(90deg);
-	transform-origin: left center;
+.ZoomLens {
+  cursor: pointer;
+  background-color: rgb(255 255 255 / 0.5);
+  pointer-events: none;
+  z-index: 20;
+  /* mix-blend-mode: destination-out; */
 }
-.swiper-vertical .swiper-button-prev {
-	top: calc(var(--swiper-navigation-size) / 2 - 20px);
+
+.EasyZoomImageHoverMainContainer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transition-duration: 150ms;
+  z-index: 10;
 }
-.swiper-vertical .swiper-button-next {
-	top: auto;
-	bottom: calc(var(--swiper-navigation-size) / 2 - 20px);
-}
-.swiper-wrapper{
-  padding: 30px 0;
+
+.EasyZoomImageHoverMainContainer:hover::after {
+  background-color: rgba(225, 225, 225, 0.2);
 }
 
 .container-sp {
-    width: 100%;
-    @media (width >= 40rem /* 640px */) {
-        max-width: 40rem /* 640px */;
-    }
-    @media (width >= 48rem /* 768px */) {
-        max-width: 48rem /* 768px */;
-    }
-    @media (width >= 64rem /* 1024px */) {
-        max-width: 74rem /* 1024px */;
-    }
-    @media (width >= 80rem /* 1280px */) {
-        max-width: 90rem /* 1280px */;
-    }
-    @media (width >= 96rem /* 1536px */) {
-        max-width: 100rem /* 1536px */;
-    }
+  width: 100%;
+  @media (width >= 40rem /* 640px */) {
+    max-width: 40rem /* 640px */;
+  }
+  @media (width >= 48rem /* 768px */) {
+    max-width: 48rem /* 768px */;
+  }
+  @media (width >= 64rem /* 1024px */) {
+    max-width: 74rem /* 1024px */;
+  }
+  @media (width >= 80rem /* 1280px */) {
+    max-width: 90rem /* 1280px */;
+  }
+  @media (width >= 96rem /* 1536px */) {
+    max-width: 100rem /* 1536px */;
+  }
 }

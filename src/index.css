@@ -7,13 +7,16 @@
   --color-accent: #f59e0b;
   --color-background: #f9fafb;
   --color-text: #1f2937;
-  --shadow-sh2: rgba(0, 0, 0, 0.3) 0px 0px 15px 0px;
 }
 
 * {
-  transform: translateZ(0px);
   font-family: "Poppins", "Manrope", sans-serif;
   font-optical-sizing: auto;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 nav a {

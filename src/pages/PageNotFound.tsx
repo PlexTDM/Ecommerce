@@ -1,23 +1,22 @@
-import React from "react";
 import { Link } from "react-router-dom";
-import { Navbar } from "@/components";
 
 const PageNotFound = () => {
   return (
-    <>
-      <div className="container my-3 py-3">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12 py-5 bg-light text-center">
-              <h4 className="p-3 display-5">404: Page Not Found</h4>
-              <Link to="/" className="btn  btn-outline-dark mx-4">
-                <i className="fa fa-arrow-left"></i> Go Back to Home
-              </Link>
-            </div>
-          </div>
-        </div>
+    <div className="flex min-h-[60vh] items-center justify-center bg-gray-50 px-4 py-16">
+      <div className="w-full max-w-lg rounded-2xl bg-white p-10 text-center shadow-sm">
+        <p className="text-sm font-semibold uppercase tracking-widest text-indigo-600">404</p>
+        <h1 className="mt-2 text-3xl font-bold text-gray-900">Page not found</h1>
+        <p className="mt-3 text-gray-500">
+          The page you are looking for does not exist or has moved.
+        </p>
+        <Link
+          to="/"
+          className="mt-6 inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 font-medium text-white transition-colors hover:bg-indigo-700"
+        >
+          Go back home
+        </Link>
       </div>
-    </>
+    </div>
   );
 };
 

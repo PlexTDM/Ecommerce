@@ -1,4 +1,5 @@
-import { Navbar, Footer, RegisterForm, AnimeFigure } from "@/components";
+import RegisterForm from "@/components/RegisterForm";
+import AnimeFigure from "@/components/AnimeFigure";
 
 const Register = () => {
   return (

@@ -1,10 +1,10 @@
 import React, {
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type ChangeEvent,
+  type FormEvent,
 } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -41,16 +41,16 @@ const Product = () => {
   useEffect(() => {
     const q = searchParams.get("q");
     if (q) {
-      searchProducts(q);
+      void searchProducts(q);
     } else {
-      loadProducts(currentPage);
+      void loadProducts(currentPage);
     }
   }, [page]);
 
   useEffect(() => {
     const q = searchParams.get("q");
     if (q) {
-      searchProducts(q);
+      void searchProducts(q);
     }
   }, [searchParams]);
 
@@ -62,27 +62,18 @@ const Product = () => {
       [name]: `0,${value}`,
     };
     const queryString = new URLSearchParams(merged).toString();
-    filterProducts(Object.fromEntries(new URLSearchParams(queryString)));
+    void filterProducts(Object.fromEntries(new URLSearchParams(queryString)));
   };
 
-  const handleCustomPrice = (e: SubmitEvent) => {
+  const handleCustomPrice = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const minPrice = (form.elements.namedItem("minPrice") as HTMLInputElement)
-      .value;
-    const maxPrice = (form.elements.namedItem("maxPrice") as HTMLInputElement)
-      .value;
-    if (minPrice || maxPrice)
-      setFilters({ ...filters, price: `${minPrice},${maxPrice}` });
+    const form = e.currentTarget;
+    const minPrice = (form.elements.namedItem("minPrice") as HTMLInputElement).value;
+    const maxPrice = (form.elements.namedItem("maxPrice") as HTMLInputElement).value;
+    if (minPrice || maxPrice) setFilters({ ...filters, price: `${minPrice},${maxPrice}` });
   };
 
-  const ShowProduct = ({
-    product,
-    index,
-  }: {
-    product: ProductType;
-    index: number;
-  }) => {
+  const ShowProduct = ({ product }: { product: ProductType }) => {
     const [isFlying, setIsFlying] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
 
@@ -104,12 +95,8 @@ const Product = () => {
         "fixed w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-full shadow-lg";
       document.body.appendChild(floatingButton);
       floatingButton.src = product.image;
-      floatingButton.style.left = `${
-        button.left + button.width / 2 - 24 + scrollX
-      }px`;
-      floatingButton.style.top = `${
-        button.top + button.height / 2 - 24 + scrollY
-      }px`;
+      floatingButton.style.left = `${button.left + button.width / 2 - 24 + scrollX}px`;
+      floatingButton.style.top = `${button.top + button.height / 2 - 24 + scrollY}px`;
 
       animate(
         floatingButton,
@@ -134,17 +121,21 @@ const Product = () => {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, margin: "-50px" }}
+        whileHover={{
+          boxShadow: "rgba(0, 0, 0, 0.3) 0px 0px 15px 0px",
+        }}
+        viewport={{ once: true, margin: "-50px" }}
         transition={{
           opacity: { duration: 0.5, ease: "easeIn" },
-          y: { duration: 0.4, ease: "linear" },
+          y: { duration: 0.4, ease: "easeIn" },
+          boxShadow: { duration: 0.2 },
         }}
-        className="border border-gray-200 p-2 relative rounded-md shadow-xl hover:shadow-sh2 duration-200 text-sm xl:text-base group"
+        className="border border-gray-200 p-2 relative rounded-md text-sm xl:text-base"
       >
         <Link
-          className="relative cursor-pointer min-h-64 w-full overflow-hidden"
           to={`/product/${product._id}`}
           state={{ productData: product }}
+          className="relative cursor-pointer min-h-64 w-full overflow-hidden"
         >
           <img
             src="https://dzt1km7tv28ex.cloudfront.net/static/shop/product_no_image.png"
@@ -167,7 +158,8 @@ const Product = () => {
 
         <div className="flex flex-col grow p-2">
           <Link
-            to={`/products/${product._id}`}
+            to={`/product/${product._id}`}
+            state={{ productData: product }}
             className="hover:text-gray-500 max-w-full line-clamp-2 cursor-pointer duration-100"
           >
             {product.title}
@@ -177,14 +169,9 @@ const Product = () => {
 
           {product.discount ? (
             <div>
-              <p className="line-through text-gray-500 text-sm">
-                ${product.price}
-              </p>
+              <p className="line-through text-gray-500 text-sm">${product.price}</p>
               <p className="flex items-center gap-2 text-red-600">
-                $
-                {Math.round(
-                  product.price * (1 - product.discount / 100) * 100,
-                ) / 100}
+                ${Math.round(product.price * (1 - product.discount / 100) * 100) / 100}
                 <span className="text-xs">({product.discount}% OFF)</span>
               </p>
             </div>
@@ -213,18 +200,14 @@ const Product = () => {
               ? Array(20)
                   .fill(null)
                   .map((_, index) => <Loading key={index} />)
-              : products?.map((p, i) => (
-                  <ShowProduct key={p.id} product={p} index={i} />
-                ))}
+              : products?.map((p) => <ShowProduct key={p.id} product={p} />)}
             {notFound && <h1>Not Found</h1>}
           </div>
-          {totalPages > 1 && (
-            <Pagination pages={totalPages} page={currentPage} />
-          )}
+          {totalPages > 1 && <Pagination pages={totalPages} page={currentPage} />}
         </div>
         <div>
           <SideSearchBar
-            onFilterChange={handleFilterChange as any}
+            onFilterChange={handleFilterChange}
             onSubmit={handleCustomPrice}
             productsLength={totalProducts}
           />

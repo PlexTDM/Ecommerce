@@ -5,11 +5,10 @@ import Carousel from "../components/Carousel";
 import { ProductsContext } from "../context/ProductsContext";
 
 const HomePage = () => {
-  const { homeProducts, homeLoading, loadHomeProducts } =
-    useContext(ProductsContext);
+  const { homeProducts, homeLoading, loadHomeProducts } = useContext(ProductsContext);
 
   useEffect(() => {
-    loadHomeProducts();
+    void loadHomeProducts();
   }, [loadHomeProducts]);
 
   return (
@@ -20,9 +19,7 @@ const HomePage = () => {
       <section className="py-16 bg-background">
         <div className="container-custom">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-text">
-              Featured Products
-            </h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-text">Featured Products</h2>
             <Link to="/products" className="text-primary hover:underline">
               View All
             </Link>
@@ -30,13 +27,8 @@ const HomePage = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {homeProducts &&
-              homeProducts.map((product, i) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  // index={i}
-                  imageSize="300.300"
-                />
+              homeProducts.map((product) => (
+                <ProductCard key={product.id} product={product} imageSize="300.300" />
               ))}
             {homeLoading &&
               Array(5)
@@ -72,8 +64,8 @@ const HomePage = () => {
                   Get 20% Off Your First Purchase
                 </h2>
                 <p className="mt-4 text-gray-500">
-                  Sign up for our newsletter and receive a special discount code
-                  for your first order.
+                  Sign up for our newsletter and receive a special discount code for your first
+                  order.
                 </p>
                 <div className="mt-6">
                   <div className="flex">

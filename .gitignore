@@ -23,6 +23,11 @@ bun.lock
 # Optional eslint cache
 .eslintcache
 
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+
 # Optional stylelint cache
 .stylelintcache
 

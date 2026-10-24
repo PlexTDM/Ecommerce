@@ -1,4 +1,5 @@
-import { Navbar, Footer, LoginForm, AnimeFigure } from "@/components";
+import LoginForm from "@/components/LoginForm";
+import AnimeFigure from "@/components/AnimeFigure";
 
 const Login = () => {
   return (

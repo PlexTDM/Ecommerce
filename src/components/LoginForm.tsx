@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { loginSchema, type LoginFormData } from "../lib/auth-schema";
-import { loginUser } from "../api";
+import { getApiErrorMessage, loginUser } from "../api";
+import toast from "react-hot-toast";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -22,17 +23,14 @@ const LoginForm = () => {
     setServerError("");
     setIsLoading(true);
     try {
-      const tokens = await loginUser(data);
-      localStorage.setItem("accessToken", tokens.accessToken);
-      localStorage.setItem("refreshToken", tokens.refreshToken);
-      navigate("/");
+      const response = await loginUser(data);
+      localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("refreshToken", response.refreshToken);
+      localStorage.setItem("user", JSON.stringify(response.user));
+      toast.success(response.message || "Signed in successfully");
+      void navigate("/");
     } catch (err: unknown) {
-      const message =
-        err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
-          : undefined;
-      setServerError(message || "Invalid email or password. Please try again.");
+      setServerError(getApiErrorMessage(err, "Invalid email or password. Please try again."));
     } finally {
       setIsLoading(false);
     }
@@ -42,9 +40,7 @@ const LoginForm = () => {
     <div className="w-full max-w-md mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Welcome back</h1>
-        <p className="mt-2 text-gray-600">
-          Sign in to your account to continue
-        </p>
+        <p className="mt-2 text-gray-600">Sign in to your account to continue</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
@@ -56,10 +52,7 @@ const LoginForm = () => {
 
         {/* Email */}
         <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             Email address
           </label>
           <input
@@ -74,17 +67,12 @@ const LoginForm = () => {
             } focus:outline-none focus:ring-2 focus:ring-offset-0 transition-colors duration-200`}
             {...register("email")}
           />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
 
         {/* Password */}
         <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
             Password
           </label>
           <input
@@ -100,9 +88,7 @@ const LoginForm = () => {
             {...register("password")}
           />
           {errors.password && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.password.message}
-            </p>
+            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
           )}
         </div>
 
@@ -113,11 +99,7 @@ const LoginForm = () => {
           className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium rounded-lg transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isLoading && (
-            <svg
-              className="animate-spin h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
+            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
               <circle
                 className="opacity-25"
                 cx="12"

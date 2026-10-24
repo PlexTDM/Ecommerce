@@ -1,34 +1,31 @@
 {
-  "name": "dump",
+  "name": "animerch-server",
   "version": "1.0.0",
-  "main": "server.ts",
+  "private": true,
+  "description": "AniMerch API with Hono, Mongoose and PayPal",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "server.ts",
   "scripts": {
     "test": "bun test",
+    "typecheck": "tsc --noEmit",
     "dev": "bun --watch server.ts",
     "start": "bun server.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "axios": "^1.8.1",
-    "bcryptjs": "^2.4.3",
-    "helmet": "^8.0.0",
-    "hono": "^4.12.8",
-    "hono-rate-limiter": "^0.5.3",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.10.2",
-    "ora": "^9.3.0",
-    "redis": "^4.7.0",
-    "zod": "^4.4.3"
+    "bcryptjs": "^3.0.3",
+    "hono": "^4.13.13",
+    "hono-rate-limiter": "^0.5.4",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.11.4",
+    "ora": "^9.4.1",
+    "zod": "^4.6.7"
   },
-  "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "@types/bun": "^1.4.4",
+    "@types/jsonwebtoken": "^9.0.10",
+    "typescript": "^7.0.2"
   }
 }

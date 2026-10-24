@@ -1,6 +1,7 @@
 import { calculateAverageRating, totalVotes } from "../helper/functions";
+import { Product } from "@/types";
 
-const StarVotes = ({ product }: { product: any }) => {
+const StarVotes = ({ product }: { product: Product }) => {
   const { ratings } = product;
   return (
     <div className="flex items-center mb-2">
@@ -17,9 +18,7 @@ const StarVotes = ({ product }: { product: any }) => {
           </svg>
         ))}
       </div>
-      <span className="text-gray-500 text-xs ml-1">
-        ({totalVotes(ratings)})
-      </span>
+      <span className="text-gray-500 text-xs ml-1">({totalVotes(ratings)})</span>
     </div>
   );
 };

@@ -1,26 +1,42 @@
-import { useState, useRef, useEffect, useContext, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback,
+  type ChangeEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { ProductsContext } from "../context/ProductsContext";
+import type { Product } from "../types";
 
 const Search = () => {
   const navigate = useNavigate();
-  const { searchProducts, products, productsLoading } =
-    useContext(ProductsContext);
+  const { searchProducts, products, productsLoading } = useContext(ProductsContext);
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const inputRef = useRef(null);
-  const debounceRef = useRef(null);
+  const [results, setResults] = useState<Product[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Auto-focus
   useEffect(() => {
-    if (open && inputRef.current) {
-      inputRef.current.focus();
+    if (open) {
+      inputRef.current?.focus();
     }
   }, [open]);
+
+  // Cancel any pending debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   // Esc to close
   useEffect(() => {
@@ -39,7 +55,7 @@ const Search = () => {
 
   // Debounced search as user types
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setQuery(value);
 
@@ -67,9 +83,9 @@ const Search = () => {
     }
   }, [products, open, query]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && query.trim()) {
-      navigate(`/products?q=${encodeURIComponent(query.trim())}`);
+      void navigate(`/products?q=${encodeURIComponent(query.trim())}`);
       closeModal();
     }
   };
@@ -80,12 +96,14 @@ const Search = () => {
     setResults([]);
   };
 
-  const handleResultClick = (product: any) => {
-    navigate(`/product/${product._id}`, { state: { productData: product } });
+  const handleResultClick = (product: Product) => {
+    void navigate(`/product/${product._id}`, {
+      state: { productData: product },
+    });
     closeModal();
   };
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleBackdropClick = (e: ReactMouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       closeModal();
     }
@@ -208,9 +226,7 @@ const Search = () => {
                                   <p className="text-sm font-medium text-gray-900 truncate">
                                     {product.title}
                                   </p>
-                                  <p className="text-sm text-red-600">
-                                    ${product.price}
-                                  </p>
+                                  <p className="text-sm text-red-600">${product.price}</p>
                                 </div>
                               </button>
                             </li>
@@ -218,9 +234,7 @@ const Search = () => {
                         </ul>
                       ) : (
                         <div className="p-6 text-center text-gray-500">
-                          {query.trim()
-                            ? "No results found"
-                            : "Type to search..."}
+                          {query.trim() ? "No results found" : "Type to search..."}
                         </div>
                       )}
                     </div>

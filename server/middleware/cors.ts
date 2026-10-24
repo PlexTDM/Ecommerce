@@ -1,18 +1,20 @@
 import { cors } from "hono/cors";
+import { getEnv } from "../env.ts";
+import type { AppEnv } from "../types.ts";
+import type { MiddlewareHandler } from "hono";
 
-const allowedOrigins = Bun.env.CORS_ALLOWED_ORIGINS || "";
-const allowedOriginsArray = allowedOrigins
-  .split(",")
-  .map((item) => item.trim());
-
-const corsConfig = cors({
+const corsConfig: MiddlewareHandler<AppEnv> = cors({
   origin: (origin) => {
-    if (allowedOriginsArray.includes(origin) || !origin) {
-      return origin;
-    }
-    return null;
+    if (!origin) return null;
+
+    const allowedOrigins = (getEnv().CORS_ALLOWED_ORIGINS ?? "")
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+
+    return allowedOrigins.includes(origin) ? origin : null;
   },
-  allowMethods: ["GET", "POST", "PUT", "DELETE"],
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   maxAge: 600,
   credentials: true,
 });

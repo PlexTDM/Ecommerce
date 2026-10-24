@@ -59,12 +59,7 @@ const Particles = () => {
   return (
     <points ref={ref}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={80}
-          array={positions}
-          itemSize={3}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
         size={0.025}
@@ -81,7 +76,7 @@ const Particles = () => {
 const AnimeFigure = () => {
   return (
     <div className="w-full h-full min-h-100 md:min-h-screen relative">
-      {/* Blur glow behind the figure */}
+      {/* glow */}
       <div
         className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
         style={{ transform: "translateY(-5%)" }}
@@ -106,11 +101,7 @@ const AnimeFigure = () => {
       >
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 5, 5]} intensity={0.8} />
-        <directionalLight
-          position={[-3, 2, -2]}
-          intensity={0.4}
-          color="#FFB6C1"
-        />
+        <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#FFB6C1" />
         <pointLight position={[0, 2, 2]} intensity={0.5} color="#FFD700" />
         <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.2}>
           <Figure />

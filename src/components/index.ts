@@ -8,4 +8,3 @@ export { default as SideSearchBar } from "./SideSearchBar";
 export { default as StarVotes } from "./StarVotes";
 export { default as LoginForm } from "./LoginForm";
 export { default as RegisterForm } from "./RegisterForm";
-export { default as AnimeFigure } from "./AnimeFigure";

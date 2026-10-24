@@ -1,41 +1,30 @@
-import router from "./routes/route.js";
-import limiter from "./middleware/rateLimit.js";
-import corsConfig from "./middleware/cors.js";
-import mongoose from "mongoose";
-import ora from "ora";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { RedisClient } from "bun";
-import Bun from "bun";
-import z from "zod";
+import mongoose from "mongoose";
+import ora from "ora";
+import { getEnv } from "./env.ts";
+import corsConfig from "./middleware/cors.ts";
+import limiter from "./middleware/rateLimit.ts";
+import router from "./routes/route.ts";
+import { initRedis } from "./services/cache.ts";
+import type { AppEnv } from "./types.ts";
 
-export const app = new Hono();
+export const app = new Hono<AppEnv>();
 
 app.use(corsConfig);
 app.use(logger());
 app.use(limiter);
 app.route("/", router);
 
-const PORT = Bun.env.PORT || 3000;
+async function start(): Promise<void> {
+  try {
+    getEnv();
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
 
-const envSchema = z.object({
-  MONGO_URI: z.string().nonempty(),
-  SECRET_ACCESS_TOKEN: z.string().nonempty(),
-  SECRET_REFRESH_TOKEN: z.string().nonempty(),
-  PAYPAL_CLIENT_ID: z.string().nonempty(),
-  PAYPAL_CLIENT_SECRET: z.string().nonempty(),
-});
-
-const result = envSchema.safeParse(Bun.env);
-if (!result.success) {
-  console.error(
-    "Environment variable validation failed:",
-    z.flattenError(result.error),
-  );
-  process.exit(1);
-}
-
-if (import.meta.path === Bun.main) {
+  const env = getEnv();
   const spinner = ora({
     discardStdin: false,
     text: "Starting services...",
@@ -43,25 +32,36 @@ if (import.meta.path === Bun.main) {
     interval: 100,
     stream: process.stdout,
   }).start();
-  try {
-    spinner.text = "Connecting to Redis...";
-    const redis = new RedisClient();
-    await redis.set("foo", "bar");
 
-    spinner.text = "Connecting to MongoDB...";
-    await mongoose.connect(Bun.env.MONGO_URI!);
+  spinner.text = "Connecting to Redis...";
+  const redisReady = await initRedis(env.REDIS_URL);
 
-    spinner.succeed("All services connected");
-
-    const server = Bun.serve({
-      development: true,
-      port: PORT,
-      fetch: app.fetch,
-      maxRequestBodySize: 16 * 1024 * 1024, //16mb
-    });
-    console.log(`Server running on http://${server.hostname}:${server.port}`);
-  } catch (err) {
-    spinner.fail("Startup failed");
-    console.error(err);
+  if (!redisReady) {
+    console.warn("Redis unavailable or not configured; cache disabled");
   }
+
+  spinner.text = "Connecting to MongoDB...";
+
+  try {
+    await mongoose.connect(env.MONGO_URI);
+  } catch (error) {
+    spinner.fail("MongoDB connection failed");
+    console.error(error);
+    process.exit(1);
+  }
+
+  spinner.succeed("All services connected");
+
+  const server = Bun.serve({
+    development: Bun.env.NODE_ENV !== "production",
+    port: env.PORT ?? 3000,
+    fetch: app.fetch,
+    maxRequestBodySize: 16 * 1024 * 1024,
+  });
+
+  console.log(`Server running on http://${server.hostname}:${server.port}`);
+}
+
+if (import.meta.main) {
+  void start();
 }
