@@ -137,12 +137,59 @@ async function listProducts(c: Context<AppEnv>): Promise<Response> {
     }
 
     const sortSpec: Record<string, 1 | -1> =
-      sort === "asc" || sort === "desc" ? { price: sort === "asc" ? 1 : -1 } : {};
+      sort === "asc" || sort === "desc"
+        ? { price: sort === "asc" ? 1 : -1 }
+        : sort === "newest"
+          ? { createdAt: -1, _id: -1 }
+          : {};
 
-    const products = await Product.find(filter)
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .sort(sortSpec);
+    let products: ProductType[];
+
+    if (sort === "rating") {
+      const ratingSort: Record<string, 1 | -1> = {
+        ratingAverage: -1,
+        ratingCount: -1,
+        createdAt: -1,
+      };
+
+      products = await Product.aggregate<ProductType>([
+        { $match: filter },
+        {
+          $addFields: {
+            ratingTotal: {
+              $sum: {
+                $map: {
+                  input: "$ratings",
+                  as: "rating",
+                  in: { $multiply: ["$$rating.stars", "$$rating.count"] },
+                },
+              },
+            },
+            ratingCount: { $sum: "$ratings.count" },
+          },
+        },
+        {
+          $addFields: {
+            ratingAverage: {
+              $cond: [
+                { $gt: ["$ratingCount", 0] },
+                { $divide: ["$ratingTotal", "$ratingCount"] },
+                0,
+              ],
+            },
+          },
+        },
+        { $sort: ratingSort },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        { $project: { ratingTotal: 0, ratingCount: 0, ratingAverage: 0 } },
+      ]);
+    } else {
+      products = await Product.find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort(sortSpec);
+    }
 
     const totalProducts = {
       all: await Product.countDocuments(filter),

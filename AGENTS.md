@@ -217,6 +217,8 @@ is a working alias of `/products/:page` (query `page` instead of the path segmen
 - [x] Working `/products/search` alias.
 - [x] Modern mobile navigation sheet with search/cart shortcuts and route-aware links.
 - [x] Responsive mobile home and catalog layouts with 2-column grids and reveal animations.
+- [x] Home rails for featured, top-rated and newest products; catalog sort control (sort is
+      preserved across search, filters and pagination).
 
 ### Next
 

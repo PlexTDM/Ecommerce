@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface PaginationProps {
@@ -41,6 +41,7 @@ const getPageItems = (currentPage: number, totalPages: number): PaginationItem[]
 
 const Pagination = ({ page, pages }: PaginationProps) => {
   const navigate = useNavigate();
+  const { search } = useLocation();
   const totalPages = Math.trunc(Number(pages));
   const parsedPage = Math.trunc(Number(page));
 
@@ -54,7 +55,7 @@ const Pagination = ({ page, pages }: PaginationProps) => {
   const goToPage = (value: number) => {
     if (value < 1 || value > totalPages || value === currentPage) return;
 
-    void navigate(`/products/${value}`);
+    void navigate({ pathname: `/products/${value}`, search });
   };
 
   const items = getPageItems(currentPage, totalPages);

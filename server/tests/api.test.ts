@@ -367,9 +367,81 @@ function applyProductUpdate(product: FakeProduct, update: unknown): void {
   product.updatedAt = new Date();
 }
 
+function productRatingCount(product: FakeProduct): number {
+  return product.ratings.reduce((sum, rating) => sum + rating.count, 0);
+}
+
+function productRatingAverage(product: FakeProduct): number {
+  const count = productRatingCount(product);
+
+  if (count === 0) return 0;
+
+  const total = product.ratings.reduce((sum, rating) => sum + rating.stars * rating.count, 0);
+  return total / count;
+}
+
+function productSortValue(product: FakeProduct, field: string): number {
+  switch (field) {
+    case "ratingAverage":
+      return productRatingAverage(product);
+    case "ratingCount":
+      return productRatingCount(product);
+    case "createdAt":
+      return product.createdAt instanceof Date ? product.createdAt.getTime() : 0;
+    case "price":
+      return product.price;
+    default:
+      return 0;
+  }
+}
+
 const productModel = {
-  async aggregate(_pipeline: unknown[]): Promise<FakeProduct[]> {
-    return [...productStore];
+  async aggregate(pipeline: unknown[]): Promise<FakeProduct[]> {
+    let items = [...productStore];
+    let sortSpec: Record<string, number> | null = null;
+    let skip = 0;
+    let limit = Number.POSITIVE_INFINITY;
+
+    for (const stage of pipeline) {
+      if (!isRecord(stage)) continue;
+
+      if (isRecord(stage.$match)) {
+        const filter = stage.$match;
+        items = items.filter((product) => matchesProductFilter(product, filter));
+      }
+
+      if (isRecord(stage.$sort)) {
+        sortSpec = stage.$sort as Record<string, number>;
+      }
+
+      if (typeof stage.$skip === "number") skip = stage.$skip;
+      if (typeof stage.$limit === "number") limit = stage.$limit;
+
+      if (isRecord(stage.$sample) && typeof stage.$sample.size === "number") {
+        limit = Math.min(limit, stage.$sample.size);
+      }
+    }
+
+    if (sortSpec) {
+      const spec = sortSpec;
+
+      items.sort((left, right) => {
+        for (const [field, direction] of Object.entries(spec)) {
+          if (direction !== 1 && direction !== -1) continue;
+
+          const leftValue = productSortValue(left, field);
+          const rightValue = productSortValue(right, field);
+
+          if (leftValue === rightValue) continue;
+
+          return leftValue < rightValue ? -direction : direction;
+        }
+
+        return 0;
+      });
+    }
+
+    return items.slice(skip, skip + limit);
   },
   async create(data: unknown): Promise<FakeProduct> {
     const parsed = asRecord(data);
@@ -985,6 +1057,7 @@ beforeAll(async () => {
       tags: ["anime"],
       description: { body1: "A figure" },
       ratings: [{ stars: 5, count: 2 }],
+      createdAt: new Date("2024-01-01T00:00:00.000Z"),
     },
     {
       _id: productBId,
@@ -999,6 +1072,7 @@ beforeAll(async () => {
       tags: ["manga"],
       description: {},
       ratings: [],
+      createdAt: new Date("2024-01-02T00:00:00.000Z"),
     },
     {
       _id: outOfStockId,
@@ -1013,6 +1087,7 @@ beforeAll(async () => {
       tags: [],
       description: {},
       ratings: [],
+      createdAt: new Date("2024-01-03T00:00:00.000Z"),
     },
   );
 
@@ -1136,6 +1211,28 @@ describe("Ecommerce API", () => {
 
     expect(detailResponse.status).toBe(200);
     expect(stringField(detailBody, "title")).toBe("Discounted Figure");
+  });
+
+  test("GET /products sorts by rating and newest", async () => {
+    const ratingResponse = await app.request("/products/1?limit=3&sort=rating");
+    const ratingBody = await readJsonObject(ratingResponse);
+    const ratingProducts = ratingBody.products;
+
+    expect(ratingResponse.status).toBe(200);
+    expect(Array.isArray(ratingProducts)).toBe(true);
+    expect(stringField(asRecord((ratingProducts as unknown[])[0]), "title")).toBe(
+      "Discounted Figure",
+    );
+
+    const newestResponse = await app.request("/products/1?limit=3&sort=newest");
+    const newestBody = await readJsonObject(newestResponse);
+    const newestProducts = newestBody.products;
+
+    expect(newestResponse.status).toBe(200);
+    expect(Array.isArray(newestProducts)).toBe(true);
+    expect(stringField(asRecord((newestProducts as unknown[])[0]), "title")).toBe(
+      "Sold Out Figure",
+    );
   });
 
   test("POST /payment/orders computes server-side discounted totals", async () => {

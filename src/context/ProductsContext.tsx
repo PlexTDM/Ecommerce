@@ -7,6 +7,10 @@ interface ProductsContextValue {
   homeProducts: Product[] | null;
   setHomeProducts: React.Dispatch<React.SetStateAction<Product[] | null>>;
   homeLoading: boolean;
+  popularProducts: Product[] | null;
+  popularLoading: boolean;
+  newestProducts: Product[] | null;
+  newestLoading: boolean;
   products: Product[];
   productsLoading: boolean;
   totalPages: number;
@@ -21,6 +25,8 @@ interface ProductsContextValue {
   relatedLoading: boolean;
   // actions
   loadHomeProducts: () => Promise<void>;
+  loadPopularProducts: () => Promise<void>;
+  loadNewestProducts: () => Promise<void>;
   loadProducts: (page?: number, params?: Record<string, string>) => Promise<void>;
   loadProductById: (id: string, cachedProduct?: Product) => Promise<void>;
   loadRelatedProducts: (tag: string) => Promise<void>;
@@ -34,6 +40,10 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   // home page — featured products
   const [homeProducts, setHomeProducts] = useState<Product[] | null>(null);
   const [homeLoading, setHomeLoading] = useState(false);
+  const [popularProducts, setPopularProducts] = useState<Product[] | null>(null);
+  const [popularLoading, setPopularLoading] = useState(false);
+  const [newestProducts, setNewestProducts] = useState<Product[] | null>(null);
+  const [newestLoading, setNewestLoading] = useState(false);
 
   // products list page
   const [products, setProducts] = useState<Product[]>([]);
@@ -72,6 +82,32 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       setHomeLoading(false);
     }
   }, [homeProducts]);
+
+  const loadPopularProducts = useCallback(async () => {
+    if (popularProducts) return;
+    setPopularLoading(true);
+    try {
+      const res: ProductsResponse = await fetchProducts(1, { limit: 5, sort: "rating" });
+      setPopularProducts(res.products);
+    } catch (err) {
+      console.error("loadPopularProducts error:", err);
+    } finally {
+      setPopularLoading(false);
+    }
+  }, [popularProducts]);
+
+  const loadNewestProducts = useCallback(async () => {
+    if (newestProducts) return;
+    setNewestLoading(true);
+    try {
+      const res: ProductsResponse = await fetchProducts(1, { limit: 5, sort: "newest" });
+      setNewestProducts(res.products);
+    } catch (err) {
+      console.error("loadNewestProducts error:", err);
+    } finally {
+      setNewestLoading(false);
+    }
+  }, [newestProducts]);
 
   const loadProducts = useCallback(
     async (page: number = 1, params: Record<string, string> = {}) => {
@@ -153,6 +189,10 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
         homeProducts,
         setHomeProducts,
         homeLoading,
+        popularProducts,
+        popularLoading,
+        newestProducts,
+        newestLoading,
         products,
         productsLoading,
         totalPages,
@@ -167,6 +207,8 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
         relatedLoading,
         // actions
         loadHomeProducts,
+        loadPopularProducts,
+        loadNewestProducts,
         loadProducts,
         loadProductById,
         loadRelatedProducts,

@@ -14,6 +14,11 @@
   font-optical-sizing: auto;
 }
 
+html {
+  scrollbar-color: #3b82f6 #e2e8f0;
+  scrollbar-width: thin;
+}
+
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -43,21 +48,16 @@ nav a:not(.noEffect):hover::after {
   transform: scale3d(1, 1, 1);
 }
 
-.ZoomLens {
-  @apply cursor-pointer bg-white/50 pointer-events-none z-20;
-  /* mix-blend-mode: destination-out; */
-}
-.EasyZoomImageHoverMainContainer::after {
-  content: "";
-  @apply absolute inset-0 duration-150 z-10;
-}
-.EasyZoomImageHoverMainContainer:hover::after {
-  background-color: rgba(225, 225, 225, 0.2);
+html::-webkit-scrollbar {
+  width: 8px; /* Thickness of vertical scrollbar */
+  height: 8px; /* Thickness of horizontal scrollbar */
 }
 
-/* .EasyZoomHoverSmallImage:hover::after {
-  mask-image: linear-gradient(
-    rgba(225, 225, 225, 0.5),
-    rgba(225, 225, 225, 0.5)
-  );
-} */
+html::-webkit-scrollbar-track {
+  background: #e2e8f0; /* Color of the tracking area */
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: #3b82f6; /* Color of the scroll thumb */
+  border-radius: 9999px; /* Rounds the edges of the thumb */
+}

@@ -97,7 +97,7 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      className="shadow-md py-3 sticky top-0 z-50 mx-auto"
+      className="shadow-md py-3 sticky top-0 z-60 mx-auto"
       animate={{
         backgroundColor: `rgba(255, 255, 255, ${bgOpacity})`,
         width: `${navWidth}%`,

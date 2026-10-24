@@ -29,7 +29,7 @@ const Carousel = () => {
           className="h-full w-full rounded-lg shadow-lg"
         >
           {images.map((img, index) => (
-            <SwiperSlide key={index} className="h-full">
+            <SwiperSlide key={index} className="h-full select-none">
               <img
                 src={img}
                 alt={`Featured anime banner ${index + 1}`}
@@ -42,7 +42,7 @@ const Carousel = () => {
 
       <div
         aria-hidden="true"
-        className="hidden w-36 shrink-0 snap-y grid-flow-row gap-2 overflow-y-scroll rounded-lg *:w-full *:snap-center *:object-cover lg:grid lg:w-44"
+        className="hidden w-40 shrink-0 snap-y grid-flow-row gap-2 overflow-y-scroll rounded-lg *:w-full *:snap-center *:object-cover lg:grid lg:w-60"
       >
         {thumbnails.map((img) => (
           <img key={img} src={img} alt="" loading="lazy" />

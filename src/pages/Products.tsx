@@ -12,7 +12,7 @@ import { addCart } from "@/redux/action";
 import { SideSearchBar, Pagination, StarVotes } from "@/components";
 import { ProductCardSkeleton } from "@/components/ui/skeletons";
 import { animate, motion } from "motion/react";
-import { ImageOff, Search, ShoppingCart, X } from "lucide-react";
+import { ArrowUpDown, ImageOff, Search, ShoppingCart, X } from "lucide-react";
 import { imageAt, imageSrcSet, type ImageVariant } from "@/lib/images";
 import { ProductsContext } from "@/context/ProductsContext";
 import type { Product as ProductType } from "@/types";
@@ -26,12 +26,21 @@ const GRID_IMAGE_SOURCES: readonly ImageVariant[] = [
 const GRID_IMAGE_SIZES =
   "(min-width: 1280px) 18vw, (min-width: 1024px) 22vw, (min-width: 864px) 30vw, 45vw";
 
+const SORT_OPTIONS = [
+  { value: "", label: "Featured" },
+  { value: "newest", label: "Newest" },
+  { value: "rating", label: "Top rated" },
+  { value: "asc", label: "Price: low to high" },
+  { value: "desc", label: "Price: high to low" },
+];
+
 const Product = () => {
   const { page = "1" } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("q")?.trim() ?? "";
+  const sortParam = searchParams.get("sort")?.trim() ?? "";
   const [searchInput, setSearchInput] = useState(searchQuery);
   const [filters, setFilters] = useState<Record<string, string>>({});
 
@@ -42,7 +51,6 @@ const Product = () => {
     totalProducts,
     notFound,
     loadProducts,
-    searchProducts,
     filterProducts,
   } = useContext(ProductsContext);
 
@@ -57,12 +65,26 @@ const Product = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (searchQuery) {
-      void searchProducts(searchQuery);
+    const params: Record<string, string> = {};
+
+    if (searchQuery) params.q = searchQuery;
+    if (sortParam) params.sort = sortParam;
+
+    void loadProducts(currentPage, params);
+  }, [currentPage, loadProducts, searchQuery, sortParam]);
+
+  const handleSortChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (event.target.value) {
+      params.set("sort", event.target.value);
     } else {
-      void loadProducts(currentPage);
+      params.delete("sort");
     }
-  }, [currentPage, loadProducts, searchProducts, searchQuery]);
+
+    const queryString = params.toString();
+    void navigate(queryString ? `/products?${queryString}` : "/products", { replace: true });
+  };
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -74,7 +96,7 @@ const Product = () => {
 
     // Navigating to the same URL does not retrigger the data effect.
     if (query && query === searchQuery && currentPage === 1) {
-      void searchProducts(query);
+      void loadProducts(1, sortParam ? { q: query, sort: sortParam } : { q: query });
     }
   };
 
@@ -281,11 +303,11 @@ const Product = () => {
         <div className="flex flex-col gap-8 lg:flex-row">
           <div className="min-w-0 flex-1">
             {/*search bar*/}
-            <div className="flex mb-4 gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
               <form
                 onSubmit={handleSearchSubmit}
                 role="search"
-                className="w-full sm:max-w-2xl sm:flex-1 mx-auto"
+                className="w-full flex-1 sm:max-w-2xl"
               >
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -316,6 +338,25 @@ const Product = () => {
                   </button>
                 </div>
               </form>
+
+              <label className="relative flex items-center sm:shrink-0">
+                <span className="sr-only">Sort products</span>
+                <ArrowUpDown
+                  className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400"
+                  aria-hidden="true"
+                />
+                <select
+                  value={sortParam}
+                  onChange={handleSortChange}
+                  className="w-full cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3 pl-9 pr-9 text-sm font-medium text-gray-700 shadow-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:w-auto"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
 
             {/*products*/}

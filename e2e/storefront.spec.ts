@@ -18,7 +18,8 @@ test.describe("storefront", () => {
     await expect(page.getByRole("heading", { name: "Featured Products" })).toBeVisible();
     await expectProductVisible(page);
     await expect(page.getByRole("link", { name: "AniMerch" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Shop by Category" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Most Popular" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Newest Arrivals" })).toBeVisible();
   });
 
   test("primary navigation reaches every storefront page", async ({ page }) => {

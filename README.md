@@ -1,6 +1,6 @@
 # AniMerch
 
-A full-stack ecommerce demo: React 19 frontend, Bun + Hono + Mongoose API, Redis caching,
+A full-stack ecommerce demo: React 19 frontend, Bun + Hono + Mongoose, Redis, VitePlus.
 PayPal checkout with idempotent orders, and an admin dashboard.
 
 ## Screenshots
