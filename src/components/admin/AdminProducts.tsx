@@ -96,7 +96,11 @@ const ProductTags = ({ tags }: { tags?: string[] }) => {
   );
 };
 
-const AdminProducts = () => {
+interface AdminProductsProps {
+  active: boolean;
+}
+
+const AdminProducts = ({ active }: AdminProductsProps) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -123,8 +127,10 @@ const AdminProducts = () => {
   }, [search]);
 
   useEffect(() => {
+    if (!active) return;
+
     const controller = new AbortController();
-    let active = true;
+    let isCurrent = true;
 
     setLoading(true);
     setError("");
@@ -138,22 +144,22 @@ const AdminProducts = () => {
       controller.signal,
     )
       .then((response) => {
-        if (active) setData(response);
+        if (isCurrent) setData(response);
       })
       .catch((err: unknown) => {
-        if (active) {
+        if (isCurrent) {
           setError(getAdminApiErrorMessage(err, "Could not load products."));
         }
       })
       .finally(() => {
-        if (active) setLoading(false);
+        if (isCurrent) setLoading(false);
       });
 
     return () => {
-      active = false;
+      isCurrent = false;
       controller.abort();
     };
-  }, [page, debouncedSearch, reloadKey]);
+  }, [active, page, debouncedSearch, reloadKey]);
 
   const handleSearchChange = (value: string) => {
     setSearch(value);

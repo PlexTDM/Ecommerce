@@ -229,6 +229,35 @@ test.describe("admin dashboard", () => {
     ).toBeVisible();
   });
 
+  test("keeps the previous tab data visible while refreshing", async ({ page }) => {
+    await mockAdminApi(page);
+    await page.goto("/admin");
+
+    await expect(page.getByText("$80.99").first()).toBeVisible();
+
+    // Slow down the next stats request so the refresh state is observable.
+    await page.route(/\/admin\/stats$/, async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(statsFixture),
+      });
+    });
+
+    await page.getByRole("tab", { name: "Products" }).click();
+    await expect(page.getByText(testProduct.title).first()).toBeVisible();
+
+    await page.getByRole("tab", { name: "Overview" }).click();
+
+    // The old metrics must stay on screen while the new request is in flight.
+    await expect(page.getByText("$80.99").first()).toBeVisible();
+    await expect(page.getByRole("button", { name: "Refreshing..." })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Refresh", exact: true })).toBeVisible({
+      timeout: 3_000,
+    });
+  });
+
   test("non-admin users are blocked", async ({ page }) => {
     await page.addInitScript(
       ({ user }) => {

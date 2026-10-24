@@ -79,7 +79,11 @@ const StatusSelect = ({ value, updating, disabled, onChange }: StatusSelectProps
   </div>
 );
 
-const AdminOrders = () => {
+interface AdminOrdersProps {
+  active: boolean;
+}
+
+const AdminOrders = ({ active }: AdminOrdersProps) => {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [data, setData] = useState<AdminOrdersResponse | null>(null);
@@ -90,8 +94,10 @@ const AdminOrders = () => {
   const [updateError, setUpdateError] = useState("");
 
   useEffect(() => {
+    if (!active) return;
+
     const controller = new AbortController();
-    let active = true;
+    let isCurrent = true;
 
     setLoading(true);
     setError("");
@@ -105,22 +111,22 @@ const AdminOrders = () => {
       controller.signal,
     )
       .then((response) => {
-        if (active) setData(response);
+        if (isCurrent) setData(response);
       })
       .catch((err: unknown) => {
-        if (active) {
+        if (isCurrent) {
           setError(getAdminApiErrorMessage(err, "Could not load orders."));
         }
       })
       .finally(() => {
-        if (active) setLoading(false);
+        if (isCurrent) setLoading(false);
       });
 
     return () => {
-      active = false;
+      isCurrent = false;
       controller.abort();
     };
-  }, [page, statusFilter, reloadKey]);
+  }, [active, page, statusFilter, reloadKey]);
 
   const handleFilterChange = (value: string) => {
     if (value !== "ALL" && !isOrderStatus(value)) return;

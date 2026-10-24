@@ -12,7 +12,10 @@ interface StatCard {
   hint: string;
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
   iconClass: string;
-  glowClass: string;
+}
+
+interface AdminOverviewProps {
+  active: boolean;
 }
 
 const OverviewSkeleton = () => (
@@ -35,37 +38,39 @@ const OverviewSkeleton = () => (
   </div>
 );
 
-const AdminOverview = () => {
+const AdminOverview = ({ active }: AdminOverviewProps) => {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
+    if (!active) return;
+
     const controller = new AbortController();
-    let active = true;
+    let isCurrent = true;
 
     setLoading(true);
     setError("");
 
     fetchAdminStats(controller.signal)
       .then((value) => {
-        if (active) setStats(value);
+        if (isCurrent) setStats(value);
       })
       .catch((err: unknown) => {
-        if (active) {
+        if (isCurrent) {
           setError(getAdminApiErrorMessage(err, "Could not load dashboard metrics."));
         }
       })
       .finally(() => {
-        if (active) setLoading(false);
+        if (isCurrent) setLoading(false);
       });
 
     return () => {
-      active = false;
+      isCurrent = false;
       controller.abort();
     };
-  }, [reloadKey]);
+  }, [active, reloadKey]);
 
   const handleRetry = () => {
     setReloadKey((key) => key + 1);
@@ -79,7 +84,6 @@ const AdminOverview = () => {
           hint: "Items in the catalog",
           Icon: BoxIcon,
           iconClass: "bg-indigo-500/15 text-indigo-300",
-          glowClass: "bg-indigo-500/15",
         },
         {
           label: "Orders",
@@ -87,7 +91,6 @@ const AdminOverview = () => {
           hint: "Orders all time",
           Icon: ReceiptIcon,
           iconClass: "bg-sky-500/15 text-sky-300",
-          glowClass: "bg-sky-500/15",
         },
         {
           label: "Revenue",
@@ -95,7 +98,6 @@ const AdminOverview = () => {
           hint: "Total order value",
           Icon: CurrencyIcon,
           iconClass: "bg-emerald-500/15 text-emerald-300",
-          glowClass: "bg-emerald-500/15",
         },
         {
           label: "Pending orders",
@@ -103,7 +105,6 @@ const AdminOverview = () => {
           hint: "Awaiting a status update",
           Icon: ClockIcon,
           iconClass: "bg-amber-500/15 text-amber-300",
-          glowClass: "bg-amber-500/15",
         },
         {
           label: "Low stock",
@@ -111,7 +112,6 @@ const AdminOverview = () => {
           hint: "Products that need attention",
           Icon: AlertIcon,
           iconClass: "bg-rose-500/15 text-rose-300",
-          glowClass: "bg-rose-500/15",
         },
       ]
     : [];
@@ -193,14 +193,9 @@ const AdminOverview = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25, delay: index * 0.04, ease: "easeOut" }}
-                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-linear-to-br from-slate-900 to-slate-900/40 p-5 shadow-lg shadow-slate-950/30"
+                  className="rounded-2xl border border-white/10 bg-slate-900 p-5 shadow-lg shadow-slate-950/30"
                 >
-                  <div
-                    aria-hidden="true"
-                    className={`pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full ${card.glowClass} blur-2xl transition-transform duration-500 group-hover:scale-125`}
-                  />
-
-                  <div className="relative flex items-start justify-between gap-3">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
                         {card.label}
@@ -219,7 +214,7 @@ const AdminOverview = () => {
                     </span>
                   </div>
 
-                  <p className="relative mt-3 text-xs text-slate-500">{card.hint}</p>
+                  <p className="mt-3 text-xs text-slate-500">{card.hint}</p>
                 </motion.article>
               ))}
             </div>

@@ -1,7 +1,7 @@
 import { useState, type ComponentType, type SVGProps } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import AdminOverview from "../components/admin/AdminOverview";
 import AdminProducts from "../components/admin/AdminProducts";
 import AdminOrders from "../components/admin/AdminOrders";
@@ -69,20 +69,10 @@ const AdminPage = () => {
   const initial = (user.username?.trim() || user.email).charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 [color-scheme:dark] selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-slate-950 text-slate-100 scheme-dark selection:bg-indigo-500/30">
       <div className="relative overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-48 left-1/2 h-120 w-240 -translate-x-1/2 rounded-full bg-indigo-600/15 blur-3xl"
-        />
-
         <div className="relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-          <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-linear-to-br from-slate-900 via-slate-900 to-indigo-950/70 p-6 shadow-2xl shadow-slate-950/40 sm:p-8">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-indigo-500/20 blur-3xl"
-            />
-
+          <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-900 p-6 shadow-2xl shadow-slate-950/40 sm:p-8">
             <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-200">
@@ -127,7 +117,7 @@ const AdminPage = () => {
                   aria-selected={isActive}
                   aria-controls={`admin-panel-${tab.id}`}
                   onClick={() => setActiveTab(tab.id)}
-                  className="relative shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60"
+                  className="relative shrink-0 cursor-pointer rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60"
                 >
                   {isActive && (
                     <motion.span
@@ -149,23 +139,33 @@ const AdminPage = () => {
             })}
           </nav>
 
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={activeTab}
-              id={`admin-panel-${activeTab}`}
-              role="tabpanel"
-              aria-labelledby={`admin-tab-${activeTab}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              className="mt-6"
-            >
-              {activeTab === "overview" && <AdminOverview />}
-              {activeTab === "products" && <AdminProducts />}
-              {activeTab === "orders" && <AdminOrders />}
-            </motion.div>
-          </AnimatePresence>
+          <div
+            id="admin-panel-overview"
+            role="tabpanel"
+            aria-labelledby="admin-tab-overview"
+            hidden={activeTab !== "overview"}
+            className="mt-6"
+          >
+            <AdminOverview active={activeTab === "overview"} />
+          </div>
+          <div
+            id="admin-panel-products"
+            role="tabpanel"
+            aria-labelledby="admin-tab-products"
+            hidden={activeTab !== "products"}
+            className="mt-6"
+          >
+            <AdminProducts active={activeTab === "products"} />
+          </div>
+          <div
+            id="admin-panel-orders"
+            role="tabpanel"
+            aria-labelledby="admin-tab-orders"
+            hidden={activeTab !== "orders"}
+            className="mt-6"
+          >
+            <AdminOrders active={activeTab === "orders"} />
+          </div>
         </div>
       </div>
     </div>
