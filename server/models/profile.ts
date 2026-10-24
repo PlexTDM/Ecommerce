@@ -33,7 +33,7 @@ const addressSchema = new Schema<Address>(
 
 const profileSchema = new Schema<Profile>(
   {
-    bio: { type: String, required: true, default: "" },
+    bio: { type: String, default: "" },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",

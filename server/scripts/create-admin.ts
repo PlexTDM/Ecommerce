@@ -28,6 +28,19 @@ if (password.length < 8) {
 
 const fallbackUsername = email.split("@")[0] ?? email;
 
+/** The failed run may have created the user before the profile insert failed. */
+async function ensureProfile(userId: mongoose.Types.ObjectId): Promise<void> {
+  const existingProfile = await Profile.findOne({ userId });
+
+  if (existingProfile) return;
+
+  await Profile.create({
+    bio: "",
+    userId,
+    addresses: [],
+  });
+}
+
 try {
   await mongoose.connect(mongoUri);
 
@@ -43,6 +56,7 @@ try {
     }
 
     await existing.save();
+    await ensureProfile(existing._id);
     console.log(`Updated existing user ${email} with the ADMIN role.`);
   } else {
     const userId = new mongoose.Types.ObjectId();
@@ -55,11 +69,7 @@ try {
       role: "ADMIN",
     });
 
-    await Profile.create({
-      bio: "",
-      userId,
-      addresses: [],
-    });
+    await ensureProfile(userId);
 
     console.log(`Created admin user ${email}.`);
   }
