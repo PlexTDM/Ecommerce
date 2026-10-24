@@ -1,27 +1,19 @@
-import { Skeleton } from "@mui/material";
-
 const ProductLoading = () => {
   return (
-    <div className=" border border-gray-200 min-h-75 rounded shadow-sm">
-      <Skeleton height={240} variant="rectangular" />
+    <div className="border border-gray-200 p-2 rounded-md shadow-sm" aria-hidden="true">
+      <div className="h-64 w-full animate-pulse rounded bg-gray-200" />
 
-      <div className="p-4">
-        <div className="mt-4">
-          <Skeleton width="80%" height={20} />
+      <div className="p-2">
+        <div className="mt-2 h-4 w-4/5 animate-pulse rounded bg-gray-200" />
+
+        <div className="mt-3 flex items-center gap-2">
+          <div className="h-3 w-24 animate-pulse rounded bg-gray-200" />
+          <div className="h-3 w-10 animate-pulse rounded bg-gray-200" />
         </div>
 
-        <div className="mt-2">
-          <Skeleton width="50%" height={20} />
-        </div>
+        <div className="mt-3 h-5 w-1/3 animate-pulse rounded bg-gray-200" />
 
-        <div className="mt-2 flex items-center gap-2">
-          <Skeleton width="30%" height={20} />
-          <Skeleton width="20%" height={20} />
-        </div>
-
-        <div className="mt-2">
-          <Skeleton width="40%" height={20} />
-        </div>
+        <div className="mt-2 h-4 w-1/2 animate-pulse rounded bg-gray-100" />
       </div>
     </div>
   );

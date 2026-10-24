@@ -1,7 +1,7 @@
 # AniMerch
 
 A full-stack ecommerce demo: React 19 frontend, Bun + Hono + Mongoose API, Redis caching,
-and PayPal checkout with idempotent orders.
+PayPal checkout with idempotent orders, and an admin dashboard.
 
 ## Quick start
 
@@ -23,6 +23,15 @@ First-time browser setup for the E2E suite:
 npx playwright install chromium
 ```
 
+Create an admin account (creates or promotes the user):
+
+```bash
+npm run admin:create -- admin@example.com 'change-me-123'
+```
+
+Sign in with that account and open `/admin` for product CRUD, order status updates, and
+store stats.
+
 ## Scripts
 
 | Command                       | What it does                          |
@@ -33,6 +42,7 @@ npx playwright install chromium
 | `npm run typecheck`           | Frontend + server TypeScript checks   |
 | `npm test`                    | Bun API tests                         |
 | `npm run test:e2e`            | Playwright browser tests (mocked API) |
+| `npm run admin:create`        | Create/promote an admin account       |
 | `cd server && bun run dev`    | Start the API in watch mode           |
 
 ## Layout
@@ -47,7 +57,8 @@ public/     Static assets
 ## API
 
 Base URL is `/`. Main resources: `/auth/*`, `/products/:page`, `/profile`, `/orders`,
-and `/payment/orders` (create/capture). Payment create requires an `Idempotency-Key`.
+`/payment/orders` (create/capture), and `/admin/*` (JWT + `ADMIN` role). Payment create
+requires an `Idempotency-Key`.
 
 ## Docs
 

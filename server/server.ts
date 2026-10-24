@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+import { secureHeaders } from "hono/secure-headers";
 import mongoose from "mongoose";
 import ora from "ora";
 import { getEnv } from "./env.ts";
@@ -11,6 +12,14 @@ import type { AppEnv } from "./types.ts";
 
 export const app = new Hono<AppEnv>();
 
+app.use(
+  secureHeaders({
+    referrerPolicy: "no-referrer",
+    strictTransportSecurity: "max-age=15552000; includeSubDomains",
+    xContentTypeOptions: "nosniff",
+    xFrameOptions: "DENY",
+  }),
+);
 app.use(corsConfig);
 app.use(logger());
 app.use(limiter);

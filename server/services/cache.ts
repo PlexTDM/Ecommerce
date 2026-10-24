@@ -47,3 +47,32 @@ export async function cacheSet(key: string, value: string, ttlSeconds = 60): Pro
     );
   }
 }
+
+export async function cacheDeleteByPrefix(prefix: string): Promise<void> {
+  if (!prefix || prefix.includes("*") || prefix.includes("?")) return;
+  if (prefix.includes("[") || prefix.includes("]")) return;
+  if (!client) return;
+
+  try {
+    let cursor = "0";
+
+    do {
+      const [nextCursor, keys] = await client.scan(cursor, "MATCH", `${prefix}*`, "COUNT", 100);
+
+      if (keys.length > 0) {
+        await client.del(...keys);
+      }
+
+      cursor = nextCursor;
+    } while (cursor !== "0");
+  } catch (error) {
+    console.warn(
+      "Redis prefix delete failed, continuing without cache:",
+      error instanceof Error ? error.message : error,
+    );
+  }
+}
+
+export async function invalidateProductCaches(): Promise<void> {
+  await Promise.all([cacheDeleteByPrefix("products:"), cacheDeleteByPrefix("product:")]);
+}

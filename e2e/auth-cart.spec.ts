@@ -74,7 +74,7 @@ test.describe("cart", () => {
     await page.goto("/products");
     await expect(page.getByText("Raiden Shogun Figure").first()).toBeVisible();
 
-    await page.locator("button:has(i.fa-shopping-cart)").first().click({ force: true });
+    await page.getByRole("button", { name: "Add to cart" }).first().click({ force: true });
 
     await expect(page.locator("#cart span")).toHaveText("1", {
       timeout: 5_000,

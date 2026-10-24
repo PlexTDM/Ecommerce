@@ -18,6 +18,7 @@ const Checkout = lazy(() => import("@/pages/Checkout"));
 const Login = lazy(() => import("@/pages/Login"));
 const Register = lazy(() => import("@/pages/Register"));
 const Profile = lazy(() => import("@/pages/Profile"));
+const AdminPage = lazy(() => import("@/pages/AdminPage"));
 const PageNotFound = lazy(() => import("@/pages/PageNotFound"));
 
 const RouteFallback = () => (
@@ -47,6 +48,7 @@ const App = () => {
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/account" element={<Profile />} />
+                <Route path="/admin" element={<AdminPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/checkout" element={<Checkout />} />

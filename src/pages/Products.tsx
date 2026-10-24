@@ -11,9 +11,18 @@ import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
 import { SideSearchBar, Pagination, Loading, StarVotes } from "../components";
 import { animate, motion } from "motion/react";
-import { parseUrlParts } from "../helper/functions";
+import { imageAt, imageSrcSet, type ImageVariant } from "../lib/images";
 import { ProductsContext } from "../context/ProductsContext";
 import type { Product as ProductType } from "../types";
+
+const GRID_IMAGE_SOURCES: readonly ImageVariant[] = [
+  { width: 256, size: "256.256" },
+  { width: 400, size: "400.400" },
+  { width: 600, size: "600.600" },
+];
+
+const GRID_IMAGE_SIZES =
+  "(min-width: 1280px) 18vw, (min-width: 1024px) 22vw, (min-width: 864px) 30vw, 45vw";
 
 const Product = () => {
   const { page = "1" } = useParams();
@@ -140,12 +149,23 @@ const Product = () => {
           <img
             src="https://dzt1km7tv28ex.cloudfront.net/static/shop/product_no_image.png"
             className="absolute top-0 left-0 w-full h-full object-cover blur-md"
-            alt="Loading placeholder"
+            alt=""
+            aria-hidden="true"
+            width={400}
+            height={400}
+            loading="lazy"
+            decoding="async"
           />
           <img
-            src={parseUrlParts(product.image)}
+            src={imageAt(product.image, "400.400")}
+            srcSet={imageSrcSet(product.image, GRID_IMAGE_SOURCES) || undefined}
+            sizes={GRID_IMAGE_SIZES}
+            alt={product.title}
+            width={400}
+            height={400}
             ref={imgRef}
             loading="lazy"
+            decoding="async"
             className="w-full h-auto min-h-43"
           />
 
@@ -182,10 +202,27 @@ const Product = () => {
           )}
         </div>
         <button
+          type="button"
           onClick={handleAddToCart}
+          aria-label="Add to cart"
+          title="Add to cart"
           className="mt-2 bg-gray-300/70 shadow-2xl absolute bottom-2 right-2 flex opacity-0 duration-100 group-hover:opacity-100 transition-all text-white p-2 items-center justify-center rounded hover:bg-gray-300 cursor-pointer"
         >
-          <i className="fa fa-shopping-cart text-black" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-black"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
         </button>
       </motion.div>
     );

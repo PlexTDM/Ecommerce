@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vp dev",
     "server": "bun --watch server/server.ts",
+    "admin:create": "bun server/scripts/create-admin.ts",
     "build": "vp build",
     "preview": "vp preview",
     "check": "vp check",
@@ -17,10 +18,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^6.0.0",
-    "@mui/material": "^9.5.0",
     "@paypal/react-paypal-js": "^10.6.1",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
@@ -28,6 +26,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.1.2",
     "axios": "^1.20.0",
+    "dompurify": "^3.4.17",
     "easy-magnify": "^1.2.0",
     "motion": "^14.6.0",
     "react": "^19.3.1",

@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { z } from "zod";
 import { isDuplicateKeyError } from "../lib/errors.ts";
 import { readRequestBody } from "../lib/request.ts";
+import { paymentRateLimiter } from "../middleware/rateLimit.ts";
 import {
   type OrderAmount,
   type OrderItem,
@@ -601,9 +602,9 @@ async function handleCaptureOrder(c: Context<AppEnv>): Promise<Response> {
   }
 }
 
-app.post("/orders", handleCreateOrder);
-app.post("/api/orders", handleCreateOrder);
-app.post("/orders/:orderID/capture", handleCaptureOrder);
-app.post("/api/orders/:orderID/capture", handleCaptureOrder);
+app.post("/orders", paymentRateLimiter, handleCreateOrder);
+app.post("/api/orders", paymentRateLimiter, handleCreateOrder);
+app.post("/orders/:orderID/capture", paymentRateLimiter, handleCaptureOrder);
+app.post("/api/orders/:orderID/capture", paymentRateLimiter, handleCaptureOrder);
 
 export default app;

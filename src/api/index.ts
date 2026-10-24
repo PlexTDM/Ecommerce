@@ -1,4 +1,11 @@
 import axios, { type InternalAxiosRequestConfig } from "axios";
+import {
+  clearAuthSession,
+  getAccessToken,
+  getRefreshToken,
+  getStoredUser,
+  updateStoredTokens,
+} from "../lib/auth-storage";
 import type {
   AuthCredentials,
   AuthResponse,
@@ -16,20 +23,12 @@ import type {
   UpdateProfilePayload,
 } from "../types";
 
+export { getAccessToken, getRefreshToken, getStoredUser };
+
 const baseURL = import.meta.env.VITE_BACK_END_API as string;
 
 /** Client for public endpoints (products, auth, refresh, logout). */
 const api = axios.create({ baseURL });
-
-export const getAccessToken = (): string | null => {
-  if (typeof window === "undefined") return null;
-
-  try {
-    return localStorage.getItem("accessToken");
-  } catch {
-    return null;
-  }
-};
 
 const attachAccessToken = (config: InternalAxiosRequestConfig) => {
   const token = getAccessToken();
@@ -44,6 +43,14 @@ const attachAccessToken = (config: InternalAxiosRequestConfig) => {
 /** Client for authenticated endpoints. Reads the token from localStorage. */
 const authApi = axios.create({ baseURL });
 authApi.interceptors.request.use(attachAccessToken);
+
+/** Shared client with automatic bearer-token refresh, reusable by feature APIs. */
+export const authenticatedApi = authApi;
+
+/** Request config carrying the single-retry marker used by the 401 interceptor. */
+interface RetryableRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 /** Extract a human-readable message from an axios/JS error. */
 export const getApiErrorMessage = (
@@ -120,9 +127,97 @@ export const refreshToken = (refreshToken: string): Promise<AuthTokens> =>
   api.put("/refresh-token", { refreshToken }).then((res) => res.data);
 
 export const logoutUser = (data: {
-  id: string;
+  id?: string;
   accessToken: string;
 }): Promise<{ message: string }> => api.post("/logout", data).then((res) => res.data);
+
+/**
+ * Single-flight access-token refresh shared by concurrent 401 responses. The
+ * public `api` client is used so a failed refresh can never re-enter here.
+ */
+let refreshInFlight: Promise<AuthTokens> | null = null;
+
+const refreshAccessToken = (): Promise<AuthTokens> => {
+  const storedRefreshToken = getRefreshToken();
+
+  if (!storedRefreshToken) {
+    return Promise.reject(new Error("No refresh token available"));
+  }
+
+  if (!refreshInFlight) {
+    refreshInFlight = refreshToken(storedRefreshToken)
+      .then((tokens) => {
+        updateStoredTokens({
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+        });
+
+        return tokens;
+      })
+      .finally(() => {
+        refreshInFlight = null;
+      });
+  }
+
+  return refreshInFlight;
+};
+
+const AUTH_ROUTES_WITHOUT_REFRESH = ["/auth/login", "/auth/register", "/refresh-token"];
+
+const isRefreshExemptRoute = (url: string | undefined): boolean =>
+  typeof url === "string" && AUTH_ROUTES_WITHOUT_REFRESH.some((route) => url.includes(route));
+
+/**
+ * On a retryable 401, refresh the tokens once and replay the original request
+ * with the new bearer token. The typed `_retry` flag guarantees one replay.
+ */
+authApi.interceptors.response.use(
+  (response) => response,
+  async (error: unknown) => {
+    if (!axios.isAxiosError(error) || error.response?.status !== 401) {
+      return Promise.reject(error);
+    }
+
+    const config: RetryableRequestConfig | undefined = error.config;
+
+    if (!config || config._retry || isRefreshExemptRoute(config.url)) {
+      return Promise.reject(error);
+    }
+
+    if (!getRefreshToken()) {
+      clearAuthSession();
+      return Promise.reject(error);
+    }
+
+    config._retry = true;
+
+    try {
+      const tokens = await refreshAccessToken();
+      config.headers.set("Authorization", `Bearer ${tokens.accessToken}`);
+
+      return authApi.request(config);
+    } catch (refreshError: unknown) {
+      clearAuthSession();
+      return Promise.reject(refreshError);
+    }
+  },
+);
+
+/** Revoke the current session (best effort) and clear it locally. */
+export const logout = async (): Promise<void> => {
+  const accessToken = getAccessToken();
+  const user = getStoredUser();
+
+  if (accessToken) {
+    try {
+      await logoutUser(user ? { accessToken, id: user.id } : { accessToken });
+    } catch {
+      // The local session must still be cleared if the API is unreachable.
+    }
+  }
+
+  clearAuthSession();
+};
 
 // ==================== Account ====================
 

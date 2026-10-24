@@ -1,12 +1,18 @@
 import { Link } from "react-router-dom";
 import type { Product } from "../types";
-import { parseUrlParts } from "../helper/functions";
+import { imageAt, imageSrcSet, type ImageVariant } from "../lib/images";
 import StarVotes from "./StarVotes";
 
 export interface ProductCardProps {
   product: Product;
   imageSize?: string;
 }
+
+const CARD_IMAGE_SOURCES: readonly ImageVariant[] = [
+  { width: 256, size: "256.256" },
+  { width: 400, size: "400.400" },
+  { width: 600, size: "600.600" },
+];
 
 const ProductCard = ({ product, imageSize }: ProductCardProps) => {
   const { _id, title, price, image, discount } = product;
@@ -16,10 +22,15 @@ const ProductCard = ({ product, imageSize }: ProductCardProps) => {
       <Link to={`/product/${_id}`} state={{ productData: product }} className="block">
         <div className="relative">
           <img
-            src={parseUrlParts(image, imageSize)}
+            src={imageAt(image, imageSize ?? "256.256")}
+            srcSet={imageSrcSet(image, CARD_IMAGE_SOURCES) || undefined}
+            sizes="(min-width: 1024px) 20vw, 50vw"
             alt={title}
+            width={400}
+            height={256}
             className="w-full h-64 object-cover"
             loading="lazy"
+            decoding="async"
           />
           {product.isNewProduct && (
             <div className="absolute -rotate-45 top-1 left-1 bg-accent rounded-full w-10 h-10 flex items-center justify-center text-white">

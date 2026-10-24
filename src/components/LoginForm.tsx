@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { loginSchema, type LoginFormData } from "../lib/auth-schema";
+import { setAuthSession } from "../lib/auth-storage";
 import { getApiErrorMessage, loginUser } from "../api";
 import toast from "react-hot-toast";
 
@@ -24,9 +25,11 @@ const LoginForm = () => {
     setIsLoading(true);
     try {
       const response = await loginUser(data);
-      localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("refreshToken", response.refreshToken);
-      localStorage.setItem("user", JSON.stringify(response.user));
+      setAuthSession({
+        user: response.user,
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      });
       toast.success(response.message || "Signed in successfully");
       void navigate("/");
     } catch (err: unknown) {

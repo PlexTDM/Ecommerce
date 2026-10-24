@@ -1,5 +1,7 @@
 import type { ProductRating } from "../types";
 
+export { getFullImage } from "../lib/images";
+
 /**
  * Computes the weighted average star rating from the server's rating buckets
  * (`{ stars, count }[]`).
@@ -48,10 +50,4 @@ export const parseUrlParts = (url: string | undefined, size?: string): string =>
     return url.replace(/\/ex\/\d+\.\d+\//, `/ex/${size}/`);
   }
   return url.replace(/\/ex\/\d+\.\d+\//, "/ex/256.256/");
-};
-
-export const getFullImage = (url: string, size: string): string => {
-  return url
-    .replace(/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\//, "/")
-    .replace(/\/ex\/\d+\.\d+\//, `/ex/${size}/`);
 };

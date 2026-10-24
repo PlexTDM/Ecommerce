@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import { getFullImage } from "../helper/functions";
+import { getFullImage, imageAt, imageSrcSet, type ImageVariant } from "../lib/images";
+import { sanitizeProductHtml } from "../lib/sanitize";
 import { EasyZoomOnHover } from "easy-magnify";
 import { Mousewheel } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,6 +16,19 @@ import { ProductsContext } from "../context/ProductsContext";
 import type { Product } from "../types";
 
 const CDN_PREFIX = "https://resize.cdn.otakumode.com/ex/50.50/shop/product/";
+
+const THUMBNAIL_SOURCES: readonly ImageVariant[] = [
+  { width: 64, size: "64.64" },
+  { width: 128, size: "128.128" },
+];
+
+const RELATED_IMAGE_SOURCES: readonly ImageVariant[] = [
+  { width: 256, size: "256.256" },
+  { width: 400, size: "400.400" },
+  { width: 600, size: "600.600" },
+];
+
+const RELATED_IMAGE_SIZES = "(min-width: 1024px) 16vw, (min-width: 640px) 25vw, 50vw";
 
 const toGalleryImage = (image: string): string =>
   /^(https?:|data:|\/)/.test(image) ? image : CDN_PREFIX + image;
@@ -305,9 +319,14 @@ const ProductSinglePage = () => {
                         }`}
                       >
                         <img
-                          src={src}
+                          src={imageAt(src, "64.64")}
+                          srcSet={imageSrcSet(src, THUMBNAIL_SOURCES) || undefined}
+                          sizes="64px"
                           alt=""
+                          width={64}
+                          height={64}
                           loading="lazy"
+                          decoding="async"
                           className="h-full w-full object-cover"
                         />
                       </button>
@@ -383,7 +402,7 @@ const ProductSinglePage = () => {
               <p
                 className="text-gray-600 mb-6"
                 dangerouslySetInnerHTML={{
-                  __html: description.body1 ?? "",
+                  __html: sanitizeProductHtml(description.body1),
                 }}
               />
 
@@ -480,14 +499,14 @@ const ProductSinglePage = () => {
               <p
                 className="text-gray-700 mb-6"
                 dangerouslySetInnerHTML={{
-                  __html: description.body2 ?? "",
+                  __html: sanitizeProductHtml(description.body2),
                 }}
               />
               {description.warning && (
                 <p
                   className="text-gray-600 mb-6 text-sm"
                   dangerouslySetInnerHTML={{
-                    __html: description.warning ?? "",
+                    __html: sanitizeProductHtml(description.warning),
                   }}
                 />
               )}
@@ -510,9 +529,14 @@ const ProductSinglePage = () => {
                 <Link to={`/product/${product._id}`} state={{ productData: product }}>
                   <div className="relative">
                     <img
-                      src={product.image}
+                      src={imageAt(product.image, "256.256")}
+                      srcSet={imageSrcSet(product.image, RELATED_IMAGE_SOURCES) || undefined}
+                      sizes={RELATED_IMAGE_SIZES}
                       alt={product.title}
+                      width={400}
+                      height={400}
                       loading="lazy"
+                      decoding="async"
                       className="w-full h-48 object-cover"
                     />
                   </div>

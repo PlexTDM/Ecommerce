@@ -14,7 +14,7 @@ const corsConfig: MiddlewareHandler<AppEnv> = cors({
 
     return allowedOrigins.includes(origin) ? origin : null;
   },
-  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   maxAge: 600,
   credentials: true,
 });

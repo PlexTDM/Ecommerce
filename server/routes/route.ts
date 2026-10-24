@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import mongoose from "mongoose";
 import { z } from "zod";
 import AuthController from "../controllers/auth.ts";
+import AdminController from "../controllers/admin.ts";
 import OrdersController from "../controllers/orders.ts";
 import PaymentController from "../controllers/paypal.ts";
 import ProductsController from "../controllers/products.ts";
@@ -35,6 +36,7 @@ const logoutSchema = z.object({
 app.get("/", (c) => c.json({ message: "Ecommerce API" }));
 
 app.route("/auth", AuthController);
+app.route("/admin", AdminController);
 app.route("/payment", PaymentController);
 app.route("/products", ProductsController);
 app.route("/orders", OrdersController);

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { registerSchema, type RegisterFormData } from "../lib/auth-schema";
+import { setAuthSession } from "../lib/auth-storage";
 import { getApiErrorMessage, registerUser } from "../api";
 import toast from "react-hot-toast";
 
@@ -29,9 +30,11 @@ const RegisterForm = () => {
         password: data.password,
         confirmPassword: data.confirmPassword,
       });
-      localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("refreshToken", response.refreshToken);
-      localStorage.setItem("user", JSON.stringify(response.user));
+      setAuthSession({
+        user: response.user,
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      });
       toast.success(response.message || "Account created successfully");
       void navigate("/");
     } catch (err: unknown) {

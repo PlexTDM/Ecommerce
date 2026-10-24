@@ -19,7 +19,7 @@ cp .env.example .env       # root: Vite client + local API
 
 # 3. Run (two terminals)
 vp dev                     # frontend  → http://localhost:3000
-cd server && bun run dev   # API       → http://localhost:3000/8888 env PORT
+cd server && bun run dev   # API       → http://localhost:8888 (PORT)
 ```
 
 MongoDB is required. Redis is optional; the API logs a warning and runs without cache
@@ -29,6 +29,13 @@ First-time browser setup for E2E tests:
 
 ```bash
 npx playwright install chromium
+```
+
+Create an admin account (creates or promotes the user, then sets the password):
+
+```bash
+npm run admin:create -- admin@example.com 'change-me-123'
+# or: ADMIN_EMAIL=... ADMIN_PASSWORD=... npm run admin:create
 ```
 
 ## Commands
@@ -43,6 +50,7 @@ npx playwright install chromium
 | `npm run typecheck`                | Frontend + server `tsc --noEmit`         |
 | `npm test` / `npm run test:server` | Bun API tests                            |
 | `npm run test:e2e`                 | Playwright browser tests (mocked API)    |
+| `npm run admin:create`             | Create/promote an admin account          |
 | `cd server && bun run dev`         | API with watch mode                      |
 | `cd server && bun run start`       | API production start                     |
 | `cd server && bun test`            | API tests only                           |
@@ -81,7 +89,11 @@ PAYPAL_API_BASE=https://api-m.sandbox.paypal.com
 PAYPAL_MOCK=false
 REDIS_URL=redis://localhost:6379
 CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+TRUST_PROXY=false
 ```
+
+Set `TRUST_PROXY=true` only when the API sits behind a reverse proxy you control;
+it makes rate limiting read the client IP from `X-Forwarded-For`.
 
 Never commit real secrets. `.env` files are gitignored.
 
@@ -89,15 +101,16 @@ Never commit real secrets. `.env` files are gitignored.
 
 ```
 src/                       React app
-  api/                     typed axios clients (public + authenticated)
-  components/              UI, profile tabs, PayPal
+  api/                     typed axios clients (public + authenticated, 401 refresh)
+  components/              UI, profile tabs, PayPal, admin dashboard
   context/                 products + pagination state
-  lib/                     zod form schemas
-  pages/                   route pages
+  hooks/                   `useAuth` (localStorage-backed auth snapshot)
+  lib/                     zod schemas, auth storage, image srcSet, DOMPurify
+  pages/                   route pages (includes `/admin`)
   redux/                   typed cart slice (localStorage-backed)
   types/                   shared API/domain types
 server/                    Bun + Hono API
-  controllers/             auth, products, profile, orders, paypal
+  controllers/             auth, products, profile, orders, paypal, admin
   middleware/              CORS, rate limiting
   models/                  Mongoose schemas
   routes/                  route tree
@@ -112,6 +125,9 @@ e2e/                       Playwright tests (API mocked with page.route)
 - Redux owns the cart and persists it to `localStorage`.
 - Auth stores `accessToken`, `refreshToken`, and `user` in `localStorage`.
 - Authenticated API calls attach `Authorization: Bearer <accessToken>`.
+- A 401 triggers one single-flight refresh; concurrent failures share the same refresh
+  promise and the original request replays once with the new token.
+- Admin API calls use the same typed client and are authorized server-side by role.
 - Checkout posts server-verified cart lines; the server recomputes all prices.
 
 ## API
@@ -139,8 +155,25 @@ Base path: `/` (frontend Docker proxy exposes it under `/api/`).
 | `GET`    | `/orders/:id`                 | Owned order (auth)           |
 | `POST`   | `/payment/orders`             | Create PayPal order          |
 | `POST`   | `/payment/orders/:id/capture` | Capture PayPal order         |
+| `GET`    | `/admin/stats`                | Dashboard counters (admin)   |
+| `GET`    | `/admin/products`             | Search/paginate (admin)      |
+| `POST`   | `/admin/products`             | Create product (admin)       |
+| `PUT`    | `/admin/products/:id`         | Update product (admin)       |
+| `DELETE` | `/admin/products/:id`         | Delete product (admin)       |
+| `GET`    | `/admin/orders`               | List/filter orders (admin)   |
+| `PATCH`  | `/admin/orders/:id/status`    | Set order status (admin)     |
 
-`/orders` and `/api/orders` payment aliases remain supported.
+`/orders` and `/api/orders` payment aliases remain supported. `/products/search`
+is a working alias of `/products/:page` (query `page` instead of the path segment).
+
+## Security
+
+- Product search and tag filters escape user input before building regexes.
+- Product description HTML is sanitized with DOMPurify before `dangerouslySetInnerHTML`.
+- `secureHeaders` sets HSTS, `nosniff`, `X-Frame-Options: DENY`, and a no-referrer policy.
+- Rate limiters: 100 req/15 min globally, 20 on auth, 30 on payment. The client key is
+  the socket IP unless `TRUST_PROXY=true`.
+- Admin product/order mutations invalidate the Redis product cache prefix.
 
 ## Payment & idempotency
 
@@ -177,10 +210,14 @@ Base path: `/` (frontend Docker proxy exposes it under `/api/`).
 - [x] Playwright E2E suite with mocked APIs.
 - [x] Docker + docker-compose (Mongo + Redis services included).
 - [x] Route-level code splitting; the 3D/Three.js bundle is lazy and isolated.
+- [x] Admin dashboard (`/admin`): stats, product CRUD, order status management.
+- [x] Auth-aware navbar with account menu/logout and automatic token refresh.
+- [x] Regex escaping, DOMPurify sanitization, secure headers, scoped rate limits.
+- [x] MUI/FontAwesome removed; local Tailwind components, inline SVGs, `srcSet` images.
+- [x] Working `/products/search` alias.
 
 ### Next
 
-- [ ] Admin dashboard for product/order management.
 - [ ] Wishlist/favorites.
 - [ ] Email verification and password reset.
 - [ ] Inventory/stock updates during checkout.

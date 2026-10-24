@@ -31,6 +31,8 @@ interface FakeProduct {
   tags: string[];
   description: { warning?: string; body1?: string; body2?: string };
   ratings: { stars: number; count: number }[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 interface FakeUser {
@@ -108,6 +110,42 @@ function stringField(record: Record<string, unknown>, key: string): string | und
   return typeof value === "string" ? value : undefined;
 }
 
+function numberField(record: Record<string, unknown>, key: string): number | undefined {
+  const value = record[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function booleanField(record: Record<string, unknown>, key: string): boolean | undefined {
+  const value = record[key];
+  return typeof value === "boolean" ? value : undefined;
+}
+
+function stringArrayField(record: Record<string, unknown>, key: string): string[] | undefined {
+  const value = record[key];
+  if (!Array.isArray(value)) return undefined;
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+function omitFields<T>(value: T, fields: unknown): T {
+  if (typeof fields !== "string" || !isRecord(value)) return value;
+
+  const excluded = fields
+    .split(/\s+/)
+    .map((field) => field.trim())
+    .filter((field) => field.startsWith("-"))
+    .map((field) => field.slice(1));
+
+  if (excluded.length === 0) return value;
+
+  const copy: Record<string, unknown> = { ...value };
+
+  for (const field of excluded) {
+    delete copy[field];
+  }
+
+  return copy as unknown as T;
+}
+
 function idString(value: unknown): string | undefined {
   if (typeof value === "string") return value;
   if (value instanceof Types.ObjectId) return value.toString();
@@ -162,7 +200,8 @@ class FakeQuery<T> implements PromiseLike<T[]> {
     return this;
   }
 
-  select(_fields: unknown): this {
+  select(fields: unknown): this {
+    this.items = this.items.map((item) => omitFields(item, fields));
     return this;
   }
 
@@ -181,7 +220,8 @@ class FakeSingleQuery<T> implements PromiseLike<T | null> {
     this.value = value;
   }
 
-  select(_fields: unknown): this {
+  select(fields: unknown): this {
+    this.value = this.value === null ? null : omitFields(this.value, fields);
     return this;
   }
 
@@ -199,19 +239,190 @@ const profileStore: FakeProfile[] = [];
 const refreshTokenStore: FakeRefreshToken[] = [];
 const orderStore: FakeOrder[] = [];
 
+function regexMatches(value: string, pattern: unknown): boolean {
+  if (typeof pattern === "string") return pattern === value;
+  if (!isRecord(pattern)) return true;
+
+  const source = pattern.$regex;
+  if (typeof source !== "string") return true;
+
+  const flags = pattern.$options === "i" ? "i" : "";
+  return new RegExp(source, flags).test(value);
+}
+
+function productTextValue(product: FakeProduct, key: string): string {
+  if (key === "title") return product.title;
+  if (key === "description.body1") return product.description.body1 ?? "";
+  if (key === "description.body2") return product.description.body2 ?? "";
+  return "";
+}
+
+function matchesProductCondition(
+  product: FakeProduct,
+  condition: Record<string, unknown>,
+): boolean {
+  return Object.entries(condition).every(([key, pattern]) => {
+    if (key === "title" || key === "description.body1" || key === "description.body2") {
+      return regexMatches(productTextValue(product, key), pattern);
+    }
+
+    return true;
+  });
+}
+
+function matchesProductFilter(product: FakeProduct, filter: Record<string, unknown>): boolean {
+  const orConditions = filter.$or;
+
+  if (Array.isArray(orConditions)) {
+    const matchesAny = orConditions.some(
+      (condition) => isRecord(condition) && matchesProductCondition(product, condition),
+    );
+
+    if (!matchesAny) return false;
+  }
+
+  if (filter.title !== undefined && !regexMatches(product.title, filter.title)) {
+    return false;
+  }
+
+  const tags = filter.tags;
+
+  if (isRecord(tags) && Array.isArray(tags.$in)) {
+    const matchesTag = tags.$in.some((pattern) => {
+      if (pattern instanceof RegExp) return product.tags.some((tag) => pattern.test(tag));
+      return typeof pattern === "string" && product.tags.includes(pattern);
+    });
+
+    if (!matchesTag) return false;
+  }
+
+  const discount = filter.discount;
+
+  if (isRecord(discount) && discount.$ne === null && product.discount === null) {
+    return false;
+  }
+
+  if (typeof filter.inStock === "boolean" && product.inStock !== filter.inStock) {
+    return false;
+  }
+
+  if (typeof filter.isNewProduct === "boolean" && product.isNewProduct !== filter.isNewProduct) {
+    return false;
+  }
+
+  const price = filter.price;
+
+  if (isRecord(price)) {
+    if (typeof price.$gte === "number" && product.price < price.$gte) return false;
+    if (typeof price.$lte === "number" && product.price > price.$lte) return false;
+  }
+
+  return true;
+}
+
+function parseProductDescription(value: Record<string, unknown>): FakeProduct["description"] {
+  const description: FakeProduct["description"] = {};
+  const warning = stringField(value, "warning");
+  const body1 = stringField(value, "body1");
+  const body2 = stringField(value, "body2");
+
+  if (warning !== undefined) description.warning = warning;
+  if (body1 !== undefined) description.body1 = body1;
+  if (body2 !== undefined) description.body2 = body2;
+
+  return description;
+}
+
+function applyProductUpdate(product: FakeProduct, update: unknown): void {
+  const parsed = isRecord(update) ? update : {};
+  const title = stringField(parsed, "title");
+  const price = numberField(parsed, "price");
+  const image = stringField(parsed, "image");
+  const externalId = stringField(parsed, "id");
+  const inStock = booleanField(parsed, "inStock");
+  const isNewProduct = booleanField(parsed, "isNewProduct");
+  const moreImages = stringArrayField(parsed, "moreImages");
+  const tags = stringArrayField(parsed, "tags");
+
+  if (title !== undefined) product.title = title;
+  if (price !== undefined) product.price = price;
+  if (image !== undefined) product.image = image;
+  if (externalId !== undefined) product.id = externalId;
+  if (inStock !== undefined) product.inStock = inStock;
+  if (isNewProduct !== undefined) product.isNewProduct = isNewProduct;
+  if (moreImages !== undefined) product.moreImages = moreImages;
+  if (tags !== undefined) product.tags = tags;
+
+  if (parsed.discount === null) {
+    product.discount = null;
+  } else {
+    const discount = numberField(parsed, "discount");
+    if (discount !== undefined) product.discount = discount;
+  }
+
+  if (isRecord(parsed.description)) {
+    product.description = parseProductDescription(parsed.description);
+  }
+
+  product.updatedAt = new Date();
+}
+
 const productModel = {
   async aggregate(_pipeline: unknown[]): Promise<FakeProduct[]> {
     return [...productStore];
+  },
+  async create(data: unknown): Promise<FakeProduct> {
+    const parsed = asRecord(data);
+    const now = new Date();
+    const product: FakeProduct = {
+      _id: new Types.ObjectId(),
+      title: stringField(parsed, "title") ?? "",
+      price: numberField(parsed, "price") ?? 0,
+      discount: typeof parsed.discount === "number" ? parsed.discount : null,
+      image: stringField(parsed, "image") ?? "",
+      id: stringField(parsed, "id") ?? crypto.randomUUID(),
+      isNewProduct: booleanField(parsed, "isNewProduct") ?? false,
+      inStock: booleanField(parsed, "inStock") ?? true,
+      moreImages: stringArrayField(parsed, "moreImages") ?? [],
+      tags: stringArrayField(parsed, "tags") ?? [],
+      description: isRecord(parsed.description) ? parseProductDescription(parsed.description) : {},
+      ratings: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    productStore.push(product);
+    return product;
   },
   async findById(id: unknown): Promise<FakeProduct | null> {
     const target = idString(id);
     return productStore.find((product) => product._id.toString() === target) ?? null;
   },
-  find(_filter: unknown): FakeQuery<FakeProduct> {
-    return new FakeQuery(productStore);
+  find(filter: unknown): FakeQuery<FakeProduct> {
+    const parsedFilter = isRecord(filter) ? filter : {};
+    const matches = productStore.filter((product) => matchesProductFilter(product, parsedFilter));
+    return new FakeQuery(matches);
   },
-  async countDocuments(_filter: unknown): Promise<number> {
-    return productStore.length;
+  async countDocuments(filter: unknown): Promise<number> {
+    const parsedFilter = isRecord(filter) ? filter : {};
+    return productStore.filter((product) => matchesProductFilter(product, parsedFilter)).length;
+  },
+  async findByIdAndUpdate(id: unknown, update: unknown): Promise<FakeProduct | null> {
+    const product = await this.findById(id);
+
+    if (!product) return null;
+
+    applyProductUpdate(product, update);
+    return product;
+  },
+  async findByIdAndDelete(id: unknown): Promise<FakeProduct | null> {
+    const target = idString(id);
+    const index = productStore.findIndex((product) => product._id.toString() === target);
+
+    if (index < 0) return null;
+
+    const [removed] = productStore.splice(index, 1);
+    return removed ?? null;
   },
 };
 
@@ -555,6 +766,10 @@ const orderModel = {
     const matches = orderStore.filter((order) => matchesOrderFilter(order, parsedFilter));
     return new FakeQuery(matches);
   },
+  async countDocuments(filter: unknown): Promise<number> {
+    const parsedFilter = isRecord(filter) ? filter : {};
+    return orderStore.filter((order) => matchesOrderFilter(order, parsedFilter)).length;
+  },
   findById(id: unknown): FakeSingleQuery<FakeOrder> {
     const target = idString(id);
     const order = orderStore.find((candidate) => candidate._id.toString() === target) ?? null;
@@ -711,9 +926,11 @@ const productAId = new Types.ObjectId();
 const productBId = new Types.ObjectId();
 const outOfStockId = new Types.ObjectId();
 const seedUserId = new Types.ObjectId();
+const adminUserId = new Types.ObjectId();
 
 let app: Hono<AppEnv>;
 let authAccessToken = "";
+let adminAccessToken = "";
 let firstCreateBody: Record<string, unknown> = {};
 let firstCreateStatus = 0;
 
@@ -807,6 +1024,14 @@ beforeAll(async () => {
     role: "USER",
   });
 
+  userStore.push({
+    _id: adminUserId,
+    username: "Admin User",
+    email: "admin@example.com",
+    password: hashSync("adminpassword123", 10),
+    role: "ADMIN",
+  });
+
   profileStore.push({
     _id: new Types.ObjectId(),
     bio: "Hello I Like Anime",
@@ -827,6 +1052,17 @@ beforeAll(async () => {
   if (!token) throw new Error("Test setup login failed");
 
   authAccessToken = token;
+
+  const adminLoginResponse = await jsonRequest("/auth/login", "POST", {
+    email: "admin@example.com",
+    password: "adminpassword123",
+  });
+  const adminLoginBody = await readJsonObject(adminLoginResponse);
+  const adminToken = stringField(adminLoginBody, "accessToken");
+
+  if (!adminToken) throw new Error("Test setup admin login failed");
+
+  adminAccessToken = adminToken;
 });
 
 afterAll(() => {
@@ -1429,5 +1665,222 @@ describe("Ecommerce API", () => {
     expect(putResponse.status).toBe(200);
     expect(stringField(putBody, "bio")).toBe("Updated bio");
     expect(Array.isArray(putBody.addresses)).toBe(true);
+  });
+
+  test("admin endpoints reject unauthenticated and non-admin users", async () => {
+    const unauthenticated = await app.request("/admin/stats");
+    expect(unauthenticated.status).toBe(401);
+
+    const nonAdmin = await app.request("/admin/stats", {
+      headers: { Authorization: `Bearer ${authAccessToken}` },
+    });
+    expect(nonAdmin.status).toBe(403);
+
+    const nonAdminCreate = await jsonRequest(
+      "/admin/products",
+      "POST",
+      { title: "Forbidden Product" },
+      { Authorization: `Bearer ${authAccessToken}` },
+    );
+    expect(nonAdminCreate.status).toBe(403);
+  });
+
+  test("admin stats report counts, pending orders and completed revenue", async () => {
+    const response = await app.request("/admin/stats", {
+      headers: { Authorization: `Bearer ${adminAccessToken}` },
+    });
+    const body = await readJsonObject(response);
+    const completedCents = orderStore
+      .filter((order) => order.status === "COMPLETED")
+      .reduce((total, order) => total + Math.round(Number(order.amount.value) * 100), 0);
+
+    expect(response.status).toBe(200);
+    expect(body.products).toBe(productStore.length);
+    expect(body.orders).toBe(orderStore.length);
+    expect(body.pendingOrders).toBe(
+      orderStore.filter((order) => order.status === "PENDING").length,
+    );
+    expect(body.lowStock).toBe(productStore.filter((product) => !product.inStock).length);
+    expect(stringField(body, "revenue")).toBe((completedCents / 100).toFixed(2));
+  });
+
+  test("admin can create, update and delete a product", async () => {
+    const createResponse = await jsonRequest(
+      "/admin/products",
+      "POST",
+      {
+        title: "Admin (Test) Product",
+        price: 42.5,
+        discount: 15,
+        image: "https://example.com/admin.jpg",
+        moreImages: ["https://example.com/admin-2.jpg"],
+        tags: ["admin", "test"],
+        inStock: true,
+        isNewProduct: true,
+        description: { body1: "Admin created product" },
+      },
+      { Authorization: `Bearer ${adminAccessToken}` },
+    );
+    const created = await readJsonObject(createResponse);
+    const mongoId = idString(created._id);
+    const externalId = stringField(created, "id");
+
+    expect(createResponse.status).toBe(201);
+    expect(stringField(created, "title")).toBe("Admin (Test) Product");
+    expect(externalId).toBeString();
+    expect(externalId).not.toBe(mongoId);
+    expect(created.ratings).toEqual([]);
+
+    if (!mongoId) throw new Error("Expected the created product id");
+
+    const listResponse = await app.request(
+      `/admin/products?q=${encodeURIComponent("Admin (Test)")}&limit=5`,
+      { headers: { Authorization: `Bearer ${adminAccessToken}` } },
+    );
+    const listBody = await readJsonObject(listResponse);
+
+    expect(listResponse.status).toBe(200);
+    expect(listBody.page).toBe(1);
+    expect(listBody.limit).toBe(5);
+    expect(listBody.totalProducts).toBe(1);
+    expect(Array.isArray(listBody.products)).toBe(true);
+
+    const updateResponse = await jsonRequest(
+      `/admin/products/${mongoId}`,
+      "PUT",
+      { price: 60, discount: null, inStock: false },
+      { Authorization: `Bearer ${adminAccessToken}` },
+    );
+    const updated = await readJsonObject(updateResponse);
+
+    expect(updateResponse.status).toBe(200);
+    expect(updated.price).toBe(60);
+    expect(updated.discount).toBeNull();
+    expect(updated.inStock).toBe(false);
+
+    const deleteResponse = await app.request(`/admin/products/${mongoId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${adminAccessToken}` },
+    });
+    const deleteBody = await readJsonObject(deleteResponse);
+
+    expect(deleteResponse.status).toBe(200);
+    expect(stringField(deleteBody, "message")).toBe("Product deleted");
+
+    const missingResponse = await app.request(`/admin/products/${mongoId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${adminAccessToken}` },
+    });
+
+    expect(missingResponse.status).toBe(404);
+  });
+
+  test("admin can list orders and update their status", async () => {
+    const orderId = new Types.ObjectId();
+
+    orderStore.push({
+      _id: orderId,
+      userId: seedUserId,
+      items: [
+        {
+          productId: productAId,
+          title: "Admin Order Product",
+          image: "https://example.com/admin-order.jpg",
+          unitPrice: 10,
+          quantity: 1,
+        },
+      ],
+      amount: { currency: "USD", value: "10.00" },
+      status: "CREATED",
+      createIdempotencyKey: "admin-order-test",
+      createResponse: { secret: "create blob" },
+      captureResponse: { secret: "capture blob" },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const listResponse = await app.request("/admin/orders?status=CREATED&limit=5", {
+      headers: { Authorization: `Bearer ${adminAccessToken}` },
+    });
+    const listBody = await readJsonObject(listResponse);
+    const orders = listBody.orders;
+
+    expect(listResponse.status).toBe(200);
+    expect(listBody.page).toBe(1);
+    expect(listBody.limit).toBe(5);
+    expect(listBody.totalOrders).toBeGreaterThan(0);
+    expect(Array.isArray(orders)).toBe(true);
+
+    const listedOrder = (orders as unknown[])
+      .map(asRecord)
+      .find((order) => idString(order._id) === orderId.toString());
+
+    if (!listedOrder) throw new Error("Expected the admin order in the list");
+
+    expect(stringField(listedOrder, "status")).toBe("CREATED");
+    expect(listedOrder.createResponse).toBeUndefined();
+    expect(listedOrder.captureResponse).toBeUndefined();
+
+    const patchResponse = await jsonRequest(
+      `/admin/orders/${orderId.toString()}/status`,
+      "PATCH",
+      { status: "COMPLETED" },
+      { Authorization: `Bearer ${adminAccessToken}` },
+    );
+    const patched = await readJsonObject(patchResponse);
+
+    expect(patchResponse.status).toBe(200);
+    expect(stringField(patched, "status")).toBe("COMPLETED");
+    expect(patched.createResponse).toBeUndefined();
+    expect(patched.captureResponse).toBeUndefined();
+
+    const invalidStatusResponse = await jsonRequest(
+      `/admin/orders/${orderId.toString()}/status`,
+      "PATCH",
+      { status: "SHIPPED" },
+      { Authorization: `Bearer ${adminAccessToken}` },
+    );
+
+    expect(invalidStatusResponse.status).toBe(400);
+
+    const missingResponse = await jsonRequest(
+      `/admin/orders/${new Types.ObjectId().toString()}/status`,
+      "PATCH",
+      { status: "COMPLETED" },
+      { Authorization: `Bearer ${adminAccessToken}` },
+    );
+
+    expect(missingResponse.status).toBe(404);
+  });
+
+  test("GET /products/search is an alias that escapes regex characters", async () => {
+    const searchResponse = await app.request("/products/search?q=Discounted&limit=2");
+    const searchBody = await readJsonObject(searchResponse);
+    const found = searchBody.products as unknown[];
+
+    expect(searchResponse.status).toBe(200);
+    expect(searchBody.page).toBe(1);
+    expect(searchBody.limit).toBe(2);
+    expect(found).toHaveLength(1);
+    expect(stringField(asRecord(found[0]), "title")).toBe("Discounted Figure");
+
+    const pageResponse = await app.request("/products/search?page=2&limit=1");
+    const pageBody = await readJsonObject(pageResponse);
+
+    expect(pageResponse.status).toBe(200);
+    expect(pageBody.page).toBe(2);
+    expect(pageBody.limit).toBe(1);
+
+    const regexQueryResponse = await app.request(`/products/search?q=${encodeURIComponent(".*")}`);
+    const regexQueryBody = await readJsonObject(regexQueryResponse);
+
+    expect(regexQueryResponse.status).toBe(200);
+    expect(regexQueryBody.products).toEqual([]);
+
+    const regexTagsResponse = await app.request(`/products/1?tags=${encodeURIComponent("(anime")}`);
+    const regexTagsBody = await readJsonObject(regexTagsResponse);
+
+    expect(regexTagsResponse.status).toBe(200);
+    expect(regexTagsBody.products).toEqual([]);
   });
 });

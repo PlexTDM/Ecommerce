@@ -4,6 +4,7 @@ import type { Types } from "mongoose";
 import { z } from "zod";
 import { isDuplicateKeyError } from "../lib/errors.ts";
 import { readRequestBody } from "../lib/request.ts";
+import { authRateLimiter } from "../middleware/rateLimit.ts";
 import Profile from "../models/profile.ts";
 import User from "../models/user.ts";
 import type { AppEnv, PublicUser, TokenUser, UserRole } from "../types.ts";
@@ -56,7 +57,7 @@ const updatePasswordSchema = z.object({
 
 app.get("/ping", (c) => c.text("pong"));
 
-app.post("/login", async (c) => {
+app.post("/login", authRateLimiter, async (c) => {
   const parsed = loginSchema.safeParse(await readRequestBody(c));
 
   if (!parsed.success) {
@@ -95,7 +96,7 @@ app.post("/login", async (c) => {
   }
 });
 
-app.post("/register", async (c) => {
+app.post("/register", authRateLimiter, async (c) => {
   const parsed = registerSchema.safeParse(await readRequestBody(c));
 
   if (!parsed.success) {

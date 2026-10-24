@@ -14,6 +14,12 @@ const envSchema = z.object({
     .string()
     .default("false")
     .transform((value) => value.toLowerCase() === "true" || value === "1"),
+  TRUST_PROXY: z
+    .union([z.boolean(), z.string()])
+    .default("false")
+    .transform((value) =>
+      typeof value === "boolean" ? value : value.toLowerCase() === "true" || value === "1",
+    ),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -1,22 +1,12 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import mongoose, { type QueryFilter } from "mongoose";
+import { parsePositiveInt } from "../lib/pagination.ts";
+import { escapeRegExp } from "../lib/regex.ts";
 import { cacheGet, cacheSet } from "../services/cache.ts";
 import Product, { type Product as ProductType } from "../models/product.ts";
+import type { AppEnv } from "../types.ts";
 
-const app = new Hono();
-
-function parsePositiveInt(value: string | undefined, fallback: number, max: number): number | null {
-  if (value === undefined || value === "") return fallback;
-  if (!/^\d+$/.test(value)) return null;
-
-  const parsed = Number.parseInt(value, 10);
-
-  if (!Number.isSafeInteger(parsed) || parsed < 1 || parsed > max) {
-    return null;
-  }
-
-  return parsed;
-}
+const app = new Hono<AppEnv>();
 
 app.get("/random", async (c) => {
   const limit = parsePositiveInt(c.req.query("limit"), 10, 50);
@@ -28,7 +18,7 @@ app.get("/random", async (c) => {
 
   try {
     const randomProducts = await Product.aggregate<ProductType>([
-      { $match: { tags: { $regex: tag, $options: "i" } } },
+      { $match: { tags: { $regex: escapeRegExp(tag), $options: "i" } } },
       { $sample: { size: limit } },
     ]);
 
@@ -78,8 +68,8 @@ app.get("/product/:id", async (c) => {
   }
 });
 
-app.get("/:page", async (c) => {
-  const page = parsePositiveInt(c.req.param("page"), 1, 1_000_000);
+async function listProducts(c: Context<AppEnv>): Promise<Response> {
+  const page = parsePositiveInt(c.req.param("page") ?? c.req.query("page"), 1, 1_000_000);
   const limit = parsePositiveInt(c.req.query("limit"), 40, 100);
   const sort = c.req.query("sort");
   const price = c.req.query("price");
@@ -100,7 +90,16 @@ app.get("/:page", async (c) => {
   if (isNewProduct) filter.isNewProduct = true;
 
   if (tags) {
-    filter.tags = { $in: [new RegExp(tags.split(",").join("|"), "i")] };
+    const tagPattern = tags
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0)
+      .map((tag) => escapeRegExp(tag))
+      .join("|");
+
+    if (tagPattern) {
+      filter.tags = { $in: [new RegExp(tagPattern, "i")] };
+    }
   }
 
   if (price) {
@@ -118,7 +117,7 @@ app.get("/:page", async (c) => {
   }
 
   if (q) {
-    const search = q.toLowerCase();
+    const search = escapeRegExp(q);
     filter.$or = [
       { title: { $regex: search, $options: "i" } },
       { "description.body1": { $regex: search, $options: "i" } },
@@ -192,9 +191,12 @@ app.get("/:page", async (c) => {
 
     return c.json(response, 200);
   } catch (error) {
-    console.error("Error in /products/:page", error);
+    console.error("Error in product list", error);
     return c.json({ error: "Failed to fetch products" }, 500);
   }
-});
+}
+
+app.get("/search", listProducts);
+app.get("/:page", listProducts);
 
 export default app;
