@@ -303,11 +303,29 @@ const Product = () => {
         <div className="flex flex-col gap-8 lg:flex-row">
           <div className="min-w-0 flex-1">
             {/*search bar*/}
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mb-4 grid grid-cols-3 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
+              <label className="relative flex items-center col-span-1">
+                <span className="sr-only">Sort products</span>
+                <ArrowUpDown
+                  className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400"
+                  aria-hidden="true"
+                />
+                <select
+                  value={sortParam}
+                  onChange={handleSortChange}
+                  className="w-full cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3 pl-9 pl-r sm:pr-9 text-sm font-medium text-gray-700 shadow-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <form
                 onSubmit={handleSearchSubmit}
                 role="search"
-                className="w-full flex-1 sm:max-w-2xl"
+                className="w-full flex-1 col-span-2 lg:col-span-3"
               >
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -338,25 +356,6 @@ const Product = () => {
                   </button>
                 </div>
               </form>
-
-              <label className="relative flex items-center sm:shrink-0">
-                <span className="sr-only">Sort products</span>
-                <ArrowUpDown
-                  className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400"
-                  aria-hidden="true"
-                />
-                <select
-                  value={sortParam}
-                  onChange={handleSortChange}
-                  className="w-full cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3 pl-9 pr-9 text-sm font-medium text-gray-700 shadow-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:w-auto"
-                >
-                  {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
             </div>
 
             {/*products*/}

@@ -2,47 +2,56 @@ import type { ProductRating } from "@/types";
 
 export { getFullImage } from "@/lib/images";
 
+/** Star levels used by the legacy scraped rating buckets. */
+const STAR_LEVELS = ["1", "2", "3", "4", "5"] as const;
+
+export interface RatingStats {
+  average: number;
+  votes: number;
+}
+
 /**
- * Computes the weighted average star rating from the server's rating buckets
- * (`{ stars, count }[]`).
+ * Weighted rating average and vote count for a product. Handles both stored
+ * shapes: `{ stars, count }` entries and legacy `{ "1": n, ... "5": n }` buckets.
  */
-export const calculateAverageRating = (ratings: ProductRating[] | undefined): number => {
+export const ratingStats = (ratings: ProductRating[] | undefined): RatingStats => {
   if (!ratings || ratings.length === 0) {
-    return 0;
+    return { average: 0, votes: 0 };
   }
 
-  let totalStars = 0;
-  let totalVotes = 0;
+  let weightedStars = 0;
+  let votes = 0;
+
+  const add = (stars: number, count: number) => {
+    if (!Number.isFinite(stars) || !Number.isFinite(count) || count <= 0) return;
+    weightedStars += stars * count;
+    votes += count;
+  };
 
   for (const rating of ratings) {
-    const stars = Number(rating.stars);
-    const count = Number(rating.count);
+    if (!rating || typeof rating !== "object") continue;
 
-    if (!Number.isFinite(stars) || !Number.isFinite(count) || count <= 0) {
+    const legacyStars = Number(rating.stars);
+    const legacyCount = Number(rating.count);
+
+    if (Number.isFinite(legacyStars) && legacyStars > 0 && Number.isFinite(legacyCount)) {
+      add(legacyStars, legacyCount);
       continue;
     }
 
-    totalStars += stars * count;
-    totalVotes += count;
+    for (const level of STAR_LEVELS) {
+      add(Number(level), Number(rating[level]));
+    }
   }
 
-  if (totalVotes === 0) {
-    return 0;
-  }
-
-  return totalStars / totalVotes;
+  return { average: votes > 0 ? weightedStars / votes : 0, votes };
 };
 
-export const totalVotes = (ratings: ProductRating[] | undefined): number => {
-  if (!ratings || ratings.length === 0) {
-    return 0;
-  }
+export const calculateAverageRating = (ratings: ProductRating[] | undefined): number =>
+  ratingStats(ratings).average;
 
-  return ratings.reduce((total, rating) => {
-    const count = Number(rating.count);
-    return Number.isFinite(count) && count > 0 ? total + count : total;
-  }, 0);
-};
+export const totalVotes = (ratings: ProductRating[] | undefined): number =>
+  ratingStats(ratings).votes;
 
 export const parseUrlParts = (url: string | undefined, size?: string): string => {
   if (!url) return "";

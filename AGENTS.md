@@ -40,21 +40,22 @@ npm run admin:create -- admin@example.com 'change-me-123'
 
 ## Commands
 
-| Command                            | What it does                             |
-| ---------------------------------- | ---------------------------------------- |
-| `vp dev`                           | Vite+ dev server (port `PORT` or `3000`) |
-| `vp build`                         | Production frontend build                |
-| `vp preview`                       | Preview the production build             |
-| `vp check`                         | Oxfmt + Oxlint + type-aware checks       |
-| `vp check --fix`                   | Format and auto-fix                      |
-| `npm run typecheck`                | Frontend + server `tsc --noEmit`         |
-| `npm test` / `npm run test:server` | Bun API tests                            |
-| `npm run test:e2e`                 | Playwright browser tests (mocked API)    |
-| `npm run admin:create`             | Create/promote an admin account          |
-| `cd server && bun run dev`         | API with watch mode                      |
-| `cd server && bun run start`       | API production start                     |
-| `cd server && bun test`            | API tests only                           |
-| `cd server && bun run typecheck`   | Server strict typecheck                  |
+| Command                                             | What it does                                   |
+| --------------------------------------------------- | ---------------------------------------------- |
+| `vp dev`                                            | Vite+ dev server (port `PORT` or `3000`)       |
+| `vp build`                                          | Production frontend build                      |
+| `vp preview`                                        | Preview the production build                   |
+| `vp check`                                          | Oxfmt + Oxlint + type-aware checks             |
+| `vp check --fix`                                    | Format and auto-fix                            |
+| `npm run typecheck`                                 | Frontend + server `tsc --noEmit`               |
+| `npm test` / `npm run test:server`                  | Bun API tests                                  |
+| `npm run test:e2e`                                  | Playwright browser tests (mocked API)          |
+| `npm run admin:create`                              | Create/promote an admin account                |
+| `bun server/scripts/seed-ratings.ts [count] [seed]` | Seed random star ratings into unrated products |
+| `cd server && bun run dev`                          | API with watch mode                            |
+| `cd server && bun run start`                        | API production start                           |
+| `cd server && bun test`                             | API tests only                                 |
+| `cd server && bun run typecheck`                    | Server strict typecheck                        |
 
 Validation before finishing a change:
 

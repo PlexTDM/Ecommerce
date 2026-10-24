@@ -18,6 +18,12 @@ Bun.env.NODE_ENV = "test";
 type Role = "ADMIN" | "USER";
 type OrderStatus = "CREATED" | "CAPTURING" | "PENDING" | "COMPLETED" | "FAILED";
 
+interface FakeRating {
+  stars?: number;
+  count?: number;
+  [key: string]: number | string | undefined;
+}
+
 interface FakeProduct {
   _id: Types.ObjectId;
   title: string;
@@ -30,7 +36,7 @@ interface FakeProduct {
   moreImages: string[];
   tags: string[];
   description: { warning?: string; body1?: string; body2?: string };
-  ratings: { stars: number; count: number }[];
+  ratings: FakeRating[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -367,17 +373,44 @@ function applyProductUpdate(product: FakeProduct, update: unknown): void {
   product.updatedAt = new Date();
 }
 
+function productRatingStats(product: FakeProduct): { weighted: number; count: number } {
+  const levels = ["1", "2", "3", "4", "5"] as const;
+  let weighted = 0;
+  let count = 0;
+
+  for (const rating of product.ratings) {
+    const stars = Number(rating.stars);
+    const votes = Number(rating.count);
+
+    if (Number.isFinite(stars) && stars > 0 && Number.isFinite(votes)) {
+      weighted += stars * votes;
+      count += votes;
+      continue;
+    }
+
+    for (const level of levels) {
+      const bucket = Number(rating[level]);
+
+      if (!Number.isFinite(bucket) || bucket <= 0) continue;
+
+      weighted += Number(level) * bucket;
+      count += bucket;
+    }
+  }
+
+  return { weighted, count };
+}
+
 function productRatingCount(product: FakeProduct): number {
-  return product.ratings.reduce((sum, rating) => sum + rating.count, 0);
+  return productRatingStats(product).count;
 }
 
 function productRatingAverage(product: FakeProduct): number {
-  const count = productRatingCount(product);
+  const { weighted, count } = productRatingStats(product);
 
   if (count === 0) return 0;
 
-  const total = product.ratings.reduce((sum, rating) => sum + rating.stars * rating.count, 0);
-  return total / count;
+  return weighted / count;
 }
 
 function productSortValue(product: FakeProduct, field: string): number {
@@ -1086,7 +1119,7 @@ beforeAll(async () => {
       moreImages: [],
       tags: [],
       description: {},
-      ratings: [],
+      ratings: [{ "4": 1, "5": 3 }],
       createdAt: new Date("2024-01-03T00:00:00.000Z"),
     },
   );
@@ -1222,6 +1255,9 @@ describe("Ecommerce API", () => {
     expect(Array.isArray(ratingProducts)).toBe(true);
     expect(stringField(asRecord((ratingProducts as unknown[])[0]), "title")).toBe(
       "Discounted Figure",
+    );
+    expect(stringField(asRecord((ratingProducts as unknown[])[1]), "title")).toBe(
+      "Sold Out Figure",
     );
 
     const newestResponse = await app.request("/products/1?limit=3&sort=newest");

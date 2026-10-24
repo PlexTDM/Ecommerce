@@ -37,10 +37,15 @@ export type TokenResponse = AuthResponse;
 
 // ==================== Products ====================
 
-/** Rating entry as stored by the server (`ratings: { stars, count }[]`). */
+/**
+ * One rating entry. The catalog stores two shapes:
+ * - `{ stars, count }` from the app's own writes;
+ * - legacy per-star buckets scraped from the source, e.g. `{ "5": 12, "4": 3, ... }`.
+ */
 export interface ProductRating {
-  stars: number;
-  count: number;
+  stars?: number;
+  count?: number;
+  [key: string]: number | string | undefined;
 }
 
 export interface ProductDescription {

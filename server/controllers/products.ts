@@ -150,22 +150,101 @@ async function listProducts(c: Context<AppEnv>): Promise<Response> {
         ratingAverage: -1,
         ratingCount: -1,
         createdAt: -1,
+        _id: -1,
       };
 
       products = await Product.aggregate<ProductType>([
         { $match: filter },
         {
           $addFields: {
-            ratingTotal: {
-              $sum: {
-                $map: {
-                  input: "$ratings",
-                  as: "rating",
-                  in: { $multiply: ["$$rating.stars", "$$rating.count"] },
+            ratingEntries: {
+              $map: {
+                input: { $ifNull: ["$ratings", []] },
+                as: "rating",
+                in: {
+                  $let: {
+                    vars: {
+                      buckets: {
+                        $cond: [
+                          { $eq: [{ $type: "$$rating" }, "object"] },
+                          { $objectToArray: "$$rating" },
+                          [],
+                        ],
+                      },
+                    },
+                    in: {
+                      stars: {
+                        $cond: [
+                          { $isNumber: "$$rating.stars" },
+                          { $multiply: ["$$rating.stars", { $ifNull: ["$$rating.count", 0] }] },
+                          {
+                            $sum: {
+                              $map: {
+                                input: {
+                                  $filter: {
+                                    input: "$$buckets",
+                                    as: "bucket",
+                                    cond: { $in: ["$$bucket.k", ["1", "2", "3", "4", "5"]] },
+                                  },
+                                },
+                                as: "bucket",
+                                in: {
+                                  $multiply: [
+                                    { $toDouble: "$$bucket.k" },
+                                    {
+                                      $convert: {
+                                        input: "$$bucket.v",
+                                        to: "double",
+                                        onError: 0,
+                                        onNull: 0,
+                                      },
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                          },
+                        ],
+                      },
+                      count: {
+                        $cond: [
+                          { $isNumber: "$$rating.stars" },
+                          { $ifNull: ["$$rating.count", 0] },
+                          {
+                            $sum: {
+                              $map: {
+                                input: {
+                                  $filter: {
+                                    input: "$$buckets",
+                                    as: "bucket",
+                                    cond: { $in: ["$$bucket.k", ["1", "2", "3", "4", "5"]] },
+                                  },
+                                },
+                                as: "bucket",
+                                in: {
+                                  $convert: {
+                                    input: "$$bucket.v",
+                                    to: "double",
+                                    onError: 0,
+                                    onNull: 0,
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
                 },
               },
             },
-            ratingCount: { $sum: "$ratings.count" },
+          },
+        },
+        {
+          $addFields: {
+            ratingTotal: { $sum: "$ratingEntries.stars" },
+            ratingCount: { $sum: "$ratingEntries.count" },
           },
         },
         {
@@ -182,7 +261,14 @@ async function listProducts(c: Context<AppEnv>): Promise<Response> {
         { $sort: ratingSort },
         { $skip: (page - 1) * limit },
         { $limit: limit },
-        { $project: { ratingTotal: 0, ratingCount: 0, ratingAverage: 0 } },
+        {
+          $project: {
+            ratingEntries: 0,
+            ratingTotal: 0,
+            ratingCount: 0,
+            ratingAverage: 0,
+          },
+        },
       ]);
     } else {
       products = await Product.find(filter)
