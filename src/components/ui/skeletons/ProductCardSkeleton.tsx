@@ -1,4 +1,4 @@
-const ProductLoading = () => {
+const ProductCardSkeleton = () => {
   return (
     <div className="border border-gray-200 p-2 rounded-md shadow-sm" aria-hidden="true">
       <div className="h-64 w-full animate-pulse rounded bg-gray-200" />
@@ -19,4 +19,4 @@ const ProductLoading = () => {
   );
 };
 
-export default ProductLoading;
+export default ProductCardSkeleton;

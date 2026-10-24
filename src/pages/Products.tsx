@@ -9,7 +9,8 @@ import React, {
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
-import { SideSearchBar, Pagination, Loading, StarVotes } from "../components";
+import { SideSearchBar, Pagination, StarVotes } from "../components";
+import { ProductCardSkeleton } from "../components/ui/skeletons";
 import { animate, motion } from "motion/react";
 import { imageAt, imageSrcSet, type ImageVariant } from "../lib/images";
 import { ProductsContext } from "../context/ProductsContext";
@@ -236,7 +237,7 @@ const Product = () => {
             {productsLoading
               ? Array(20)
                   .fill(null)
-                  .map((_, index) => <Loading key={index} />)
+                  .map((_, index) => <ProductCardSkeleton key={index} />)
               : products?.map((p) => <ShowProduct key={p.id} product={p} />)}
             {notFound && <h1>Not Found</h1>}
           </div>

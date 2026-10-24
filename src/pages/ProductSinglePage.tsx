@@ -11,7 +11,8 @@ import "../custom-swiper.css";
 import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
 import { animate } from "motion/react";
-import { Loading, StarVotes } from "../components";
+import { StarVotes } from "../components";
+import { ProductCardSkeleton, ProductImageSkeleton } from "../components/ui/skeletons";
 import { ProductsContext } from "../context/ProductsContext";
 import type { Product } from "../types";
 
@@ -377,13 +378,7 @@ const ProductSinglePage = () => {
                   zoomContainerWidth={500}
                   zoomContainerHeight={600}
                   distance={1}
-                  loadingIndicator={
-                    <div
-                      aria-hidden="true"
-                      style={{ width: 500, height: 600 }}
-                      className="max-w-full animate-pulse rounded-lg bg-gray-200"
-                    />
-                  }
+                  loadingIndicator={<ProductImageSkeleton />}
                 />
               )}
             </div>
@@ -553,7 +548,7 @@ const ProductSinglePage = () => {
           {relatedLoading &&
             Array(6)
               .fill(null)
-              .map((_, i) => <Loading key={i} />)}
+              .map((_, i) => <ProductCardSkeleton key={i} />)}
         </div>
       </div>
     </div>

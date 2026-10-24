@@ -15,6 +15,7 @@ import AdminPagination from "./AdminPagination";
 import ConfirmDialog from "./ConfirmDialog";
 import ProductFormModal from "./ProductFormModal";
 import Spinner from "./Spinner";
+import { AdminTableSkeleton } from "../ui/skeletons";
 import {
   AlertIcon,
   BoxIcon,
@@ -329,11 +330,7 @@ const AdminProducts = ({ active }: AdminProductsProps) => {
       )}
 
       {loading && !data ? (
-        <div className="space-y-2 p-5" aria-hidden="true">
-          {Array.from({ length: 7 }, (_, index) => (
-            <div key={index} className="h-14 animate-pulse rounded-xl bg-white/5" />
-          ))}
-        </div>
+        <AdminTableSkeleton />
       ) : !data ? (
         <div
           role="alert"

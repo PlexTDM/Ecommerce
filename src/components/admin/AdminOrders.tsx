@@ -9,6 +9,7 @@ import Spinner from "./Spinner";
 import { ORDER_STATUSES, isOrderStatus } from "./order-status";
 import { AlertIcon, CloseIcon, RefreshIcon, ReceiptIcon, UserIcon } from "./icons";
 import { formatCurrency, formatDate, formatDateTime, formatNumber } from "./format";
+import { AdminTableSkeleton } from "../ui/skeletons";
 
 const PAGE_SIZE = 20;
 
@@ -257,11 +258,7 @@ const AdminOrders = ({ active }: AdminOrdersProps) => {
       )}
 
       {loading && !data ? (
-        <div className="space-y-2 p-5" aria-hidden="true">
-          {Array.from({ length: 7 }, (_, index) => (
-            <div key={index} className="h-14 animate-pulse rounded-xl bg-white/5" />
-          ))}
-        </div>
+        <AdminTableSkeleton />
       ) : !data ? (
         <div
           role="alert"

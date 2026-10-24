@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ProductCard, Loading } from "../components";
+import { ProductCard } from "../components";
+import { ProductCardSkeleton } from "../components/ui/skeletons";
 import { useEffect, useContext } from "react";
 import Carousel from "../components/Carousel";
 import { ProductsContext } from "../context/ProductsContext";
@@ -33,7 +34,7 @@ const HomePage = () => {
             {homeLoading &&
               Array(5)
                 .fill(null)
-                .map((_, i) => <Loading key={i} />)}
+                .map((_, i) => <ProductCardSkeleton key={i} />)}
           </div>
         </div>
       </section>

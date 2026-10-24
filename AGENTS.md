@@ -237,6 +237,7 @@ is a working alias of `/products/:page` (query `page` instead of the path segmen
 - Keep prices server-authoritative; never trust client totals.
 - Use cents rounding helpers (`server/services/pricing.ts`, checkout helpers).
 - Put repeated API logic in `src/api/index.ts`.
+- Skeleton loaders live in `src/components/ui/skeletons`; reuse them instead of inline pulse markup.
 - Run `vp check --fix` before committing; hooks call `vp staged`.
 
 <!--VITE PLUS START-->
