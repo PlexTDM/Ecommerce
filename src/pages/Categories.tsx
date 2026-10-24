@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { storeCategories } from "@/data/categories";
 
 const Categories = () => {
@@ -34,18 +35,7 @@ const Categories = () => {
                 </h3>
                 <div className="flex items-center text-indigo-300 opacity-100 sm:opacity-0 group-hover:opacity-100 transform sm:translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100">
                   <span className="text-lg font-bold mr-2">Explore Collection</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <ArrowRight className="h-6 w-6" />
                 </div>
               </div>
             </Link>

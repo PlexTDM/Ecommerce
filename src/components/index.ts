@@ -4,6 +4,6 @@ export { default as Navbar } from "./Navbar";
 export { default as Pagination } from "./Pagination";
 export { default as ProductCard } from "./ProductCard";
 export { default as SideSearchBar } from "./SideSearchBar";
-export { default as StarVotes } from "./StarVotes";
+export { default as StarVotes } from "./ui/StarVotes";
 export { default as LoginForm } from "./LoginForm";
 export { default as RegisterForm } from "./RegisterForm";

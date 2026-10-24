@@ -12,6 +12,7 @@ import { addCart } from "@/redux/action";
 import { SideSearchBar, Pagination, StarVotes } from "@/components";
 import { ProductCardSkeleton } from "@/components/ui/skeletons";
 import { animate, motion } from "motion/react";
+import { Search, ShoppingCart } from "lucide-react";
 import { imageAt, imageSrcSet, type ImageVariant } from "@/lib/images";
 import { ProductsContext } from "@/context/ProductsContext";
 import type { Product as ProductType } from "@/types";
@@ -185,21 +186,7 @@ const Product = () => {
             title="Add to cart"
             className="absolute bottom-2 right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/95 text-gray-800 shadow-md backdrop-blur transition-all hover:bg-indigo-600 hover:text-white sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4.5 w-4.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
+            <ShoppingCart className="h-4.5 w-4.5" />
           </button>
         </div>
 
@@ -238,9 +225,6 @@ const Product = () => {
       <div className="mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
-              Catalog
-            </p>
             <h1 className="mt-1 text-2xl font-bold tracking-tight text-text sm:text-3xl">
               Products
             </h1>
@@ -267,21 +251,7 @@ const Product = () => {
               {notFound && (
                 <div className="col-span-full flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-200 bg-white px-6 py-16 text-center">
                   <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50 text-gray-400">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
+                    <Search className="h-6 w-6" />
                   </span>
                   <h2 className="mt-4 text-lg font-semibold text-text">No products found</h2>
                   <p className="mt-1 max-w-sm text-sm text-gray-500">

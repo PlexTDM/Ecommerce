@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
+import { X } from "lucide-react";
 import { addressSchema, type AddressFormData } from "@/lib/profile-schema";
 import type { Address } from "@/types";
 
@@ -164,20 +165,7 @@ const AddEditAddress = ({ address, saving, error, onSave, onCancel }: AddEditAdd
             className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
             aria-label="Close"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <X className="h-5 w-5" />
           </button>
         </div>
 

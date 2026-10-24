@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface PaginationProps {
   page: number | string;
@@ -70,21 +71,7 @@ const Pagination = ({ page, pages }: PaginationProps) => {
           disabled={currentPage <= 1}
           className={`${baseButton} border-gray-200 bg-white text-gray-700 hover:bg-gray-100 disabled:hover:bg-white`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
+          <ChevronLeft className="h-5 w-5" />
         </button>
 
         {items.map((item) =>
@@ -121,16 +108,7 @@ const Pagination = ({ page, pages }: PaginationProps) => {
           disabled={currentPage >= totalPages}
           className={`${baseButton} border-gray-200 bg-white text-gray-700 hover:bg-gray-100 disabled:hover:bg-white`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+          <ChevronRight className="h-5 w-5" />
         </button>
       </div>
     </nav>

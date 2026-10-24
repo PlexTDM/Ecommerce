@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Product } from "@/types";
 import { imageAt, imageSrcSet, type ImageVariant } from "@/lib/images";
-import StarVotes from "@/components/StarVotes";
+import StarVotes from "@/components/ui/StarVotes";
 
 export interface ProductCardProps {
   product: Product;

@@ -1,14 +1,26 @@
-import { useEffect, useRef, type ComponentType, type KeyboardEvent, type SVGProps } from "react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import {
+  ChevronRight,
+  Home,
+  LayoutGrid,
+  LogOut,
+  Mail,
+  Package,
+  ShieldCheck,
+  ShoppingCart,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 import Search from "./Search";
 import type { PublicUser } from "@/types";
 
 interface NavigationItem {
   label: string;
   to: string;
-  Icon: ComponentType<SVGProps<SVGSVGElement>>;
+  Icon: LucideIcon;
   isActive: (pathname: string) => boolean;
 }
 
@@ -19,25 +31,25 @@ const NAV_ITEMS: readonly NavigationItem[] = [
   {
     label: "Home",
     to: "/",
-    Icon: HomeIcon,
+    Icon: Home,
     isActive: (pathname) => pathname === "/",
   },
   {
     label: "Products",
     to: "/products",
-    Icon: BoxIcon,
+    Icon: Package,
     isActive: isProductsPath,
   },
   {
     label: "Categories",
     to: "/categories",
-    Icon: GridIcon,
+    Icon: LayoutGrid,
     isActive: (pathname) => pathname.startsWith("/categories"),
   },
   {
     label: "Contact",
     to: "/contact",
-    Icon: MailIcon,
+    Icon: Mail,
     isActive: (pathname) => pathname.startsWith("/contact"),
   },
 ];
@@ -139,7 +151,7 @@ const MobileNav = ({
           aria-label={`Cart (${cartLabel})`}
           className="noEffect relative flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-100 hover:text-indigo-600"
         >
-          <CartIcon className="h-6 w-6" />
+          <ShoppingCart className="h-6 w-6" />
           {cartCount > 0 && (
             <span className="absolute right-0.5 top-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-orange-400 px-1 text-[10px] font-bold leading-none text-white">
               {cartCount > 99 ? "99+" : cartCount}
@@ -253,7 +265,7 @@ const MobileNav = ({
                   >
                     <span className="flex items-center gap-3 text-sm font-semibold text-gray-800">
                       <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-gray-600 shadow-sm">
-                        <CartIcon className="h-5 w-5" />
+                        <ShoppingCart className="h-5 w-5" />
                       </span>
                       Cart
                     </span>
@@ -286,9 +298,9 @@ const MobileNav = ({
                           onClick={onClose}
                           className="noEffect flex items-center gap-3 rounded-xl px-2 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                         >
-                          <UserIcon className="h-4.5 w-4.5 text-gray-400" />
+                          <User className="h-4.5 w-4.5 text-gray-400" />
                           Account
-                          <ChevronIcon className="ml-auto h-4 w-4 text-gray-300" />
+                          <ChevronRight className="ml-auto h-4 w-4 text-gray-300" />
                         </Link>
 
                         {isAdmin && (
@@ -297,9 +309,9 @@ const MobileNav = ({
                             onClick={onClose}
                             className="noEffect flex items-center gap-3 rounded-xl px-2 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                           >
-                            <ShieldIcon className="h-4.5 w-4.5 text-gray-400" />
+                            <ShieldCheck className="h-4.5 w-4.5 text-gray-400" />
                             Admin dashboard
-                            <ChevronIcon className="ml-auto h-4 w-4 text-gray-300" />
+                            <ChevronRight className="ml-auto h-4 w-4 text-gray-300" />
                           </Link>
                         )}
 
@@ -310,7 +322,7 @@ const MobileNav = ({
                           }}
                           className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-2 py-2.5 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                         >
-                          <LogoutIcon className="h-4.5 w-4.5" />
+                          <LogOut className="h-4.5 w-4.5" />
                           Logout
                         </button>
                       </div>
@@ -319,7 +331,7 @@ const MobileNav = ({
                     <div className="mt-3 rounded-2xl bg-slate-900 p-4 text-white">
                       <div className="flex items-start gap-3">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white">
-                          <UserIcon className="h-5 w-5" />
+                          <User className="h-5 w-5" />
                         </span>
                         <div>
                           <p className="text-sm font-semibold">Welcome to AniMerch</p>
@@ -359,176 +371,3 @@ const MobileNav = ({
 };
 
 export default MobileNav;
-
-function HomeIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M3 10.5 12 3l9 7.5" />
-      <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5" />
-    </svg>
-  );
-}
-
-function BoxIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="m20.5 7.3-8.5-5-8.5 5v9.4l8.5 5 8.5-5Z" />
-      <path d="M3.5 7.3 12 12.2l8.5-4.9M12 12.2V22" />
-    </svg>
-  );
-}
-
-function GridIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
-      <rect x="13.5" y="3.5" width="7" height="7" rx="1.5" />
-      <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" />
-      <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
-    </svg>
-  );
-}
-
-function MailIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <path d="m3.5 7 8.5 6 8.5-6" />
-    </svg>
-  );
-}
-
-function CartIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13 5.4 5M7 13l-2.3 2.3c-.6.6-.2 1.7.7 1.7H17" />
-      <circle cx="9" cy="20" r="1.5" />
-      <circle cx="17" cy="20" r="1.5" />
-    </svg>
-  );
-}
-
-function UserIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
-    </svg>
-  );
-}
-
-function ShieldIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M12 3 5 6v5c0 4.4 2.9 8 7 10 4.1-2 7-5.6 7-10V6Z" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
-  );
-}
-
-function LogoutIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
-      <path d="M10 17l5-5-5-5M15 12H3" />
-    </svg>
-  );
-}
-
-function ChevronIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="m9 5 7 7-7 7" />
-    </svg>
-  );
-}

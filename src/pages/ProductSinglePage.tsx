@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { getFullImage, imageAt, imageSrcSet, type ImageVariant } from "@/lib/images";
 import { sanitizeProductHtml } from "@/lib/sanitize";
+import { Check, ChevronDown, ChevronRight, ChevronUp, Heart, X } from "lucide-react";
 import { EasyZoomOnHover } from "easy-magnify";
 import { Mousewheel } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -225,29 +226,13 @@ const ProductSinglePage = () => {
             <Link to="/" className="text-gray-500 hover:text-primary noEffect">
               Home
             </Link>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mx-2 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            <ChevronRight className="mx-2 h-4 w-4 text-gray-400" />
           </li>
           <li className="flex items-center">
             <Link to="/products" className="text-gray-500 hover:text-primary noEffect">
               Products
             </Link>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mx-2 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            <ChevronRight className="mx-2 h-4 w-4 text-gray-400" />
           </li>
           <li className="text-gray-700 font-medium truncate">{activeProduct.title}</li>
         </ol>
@@ -266,20 +251,7 @@ const ProductSinglePage = () => {
                 disabled={!hasPreviousImage}
                 className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M18 15l-6-6-6 6"
-                  />
-                </svg>
+                <ChevronUp className="h-4 w-4" />
               </button>
 
               <Swiper
@@ -343,20 +315,7 @@ const ProductSinglePage = () => {
                 disabled={!hasNextImage}
                 className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 9l6 6 6-6"
-                  />
-                </svg>
+                <ChevronDown className="h-4 w-4" />
               </button>
             </div>
 
@@ -436,20 +395,11 @@ const ProductSinglePage = () => {
                     activeProduct.inStock ? "text-green-600" : "text-red-600"
                   }`}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d={activeProduct.inStock ? "M5 13l4 4L19 7" : "M6 18L18 6M6 6l12 12"}
-                    />
-                  </svg>
+                  {activeProduct.inStock ? (
+                    <Check className="mr-1 h-5 w-5" />
+                  ) : (
+                    <X className="mr-1 h-5 w-5" />
+                  )}
                   {activeProduct.inStock ? "Available For Purchase" : "Out of Stock"}
                 </span>
               </div>
@@ -466,20 +416,7 @@ const ProductSinglePage = () => {
                 </button>
 
                 <button className="w-12 h-12 rounded-md border cursor-pointer border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
+                  <Heart className="h-6 w-6" />
                 </button>
               </div>
             </div>

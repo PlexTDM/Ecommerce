@@ -28,6 +28,7 @@
     "axios": "^1.20.0",
     "dompurify": "^3.4.17",
     "easy-magnify": "^1.2.0",
+    "lucide-react": "^1.61.0",
     "motion": "^14.6.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

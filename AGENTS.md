@@ -213,7 +213,7 @@ is a working alias of `/products/:page` (query `page` instead of the path segmen
 - [x] Admin dashboard (`/admin`): stats, product CRUD, order status management.
 - [x] Auth-aware navbar with account menu/logout and automatic token refresh.
 - [x] Regex escaping, DOMPurify sanitization, secure headers, scoped rate limits.
-- [x] MUI/FontAwesome removed; local Tailwind components, inline SVGs, `srcSet` images.
+- [x] MUI/FontAwesome removed; Lucide icons, local Tailwind components, `srcSet` images.
 - [x] Working `/products/search` alias.
 - [x] Modern mobile navigation sheet with search/cart shortcuts and route-aware links.
 - [x] Responsive mobile home and catalog layouts with 2-column grids and reveal animations.
@@ -240,6 +240,7 @@ is a working alias of `/products/:page` (query `page` instead of the path segmen
 - Use cents rounding helpers (`server/services/pricing.ts`, checkout helpers).
 - Put repeated API logic in `src/api/index.ts`.
 - Import app modules with the `@/` alias; keep `./` only for same-folder siblings.
+- Use `lucide-react` for standard UI icons; keep custom illustrations in `src/components/ui`.
 - Skeleton loaders live in `src/components/ui/skeletons`; reuse them instead of inline pulse markup.
 - Run `vp check --fix` before committing; hooks call `vp staged`.
 

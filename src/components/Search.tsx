@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { Search as SearchIcon, X } from "lucide-react";
 import { ProductsContext } from "@/context/ProductsContext";
 import type { Product } from "@/types";
 
@@ -116,20 +117,7 @@ const Search = () => {
         className="p-2 text-gray-500 hover:text-primary transition-colors cursor-pointer"
         aria-label="Search"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
+        <SearchIcon className="h-6 w-6" />
       </button>
 
       {createPortal(
@@ -155,20 +143,7 @@ const Search = () => {
                 {/* Search bar */}
                 <div className="relative">
                   <div className="flex items-center bg-white rounded-lg shadow-2xl">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 ml-4 text-gray-400 shrink-0"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
+                    <SearchIcon className="ml-4 h-5 w-5 shrink-0 text-gray-400" />
                     <input
                       ref={inputRef}
                       type="text"
@@ -183,20 +158,7 @@ const Search = () => {
                       className="p-4 text-gray-400 hover:text-gray-600 shrink-0"
                       aria-label="Close search"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
+                      <X className="h-5 w-5" />
                     </button>
                   </div>
 
