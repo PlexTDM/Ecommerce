@@ -106,6 +106,50 @@ test.describe("storefront", () => {
     await expect(prev).toBeDisabled();
   });
 
+  test("navigation scrolls the rail with the selected image", async ({ page }) => {
+    await page.goto(`/product/${testProduct._id}`);
+
+    const next = page.getByRole("button", { name: "Next product image" });
+    const wrapper = page.locator(".swiper-vertical .swiper-wrapper").first();
+    const initialTransform = await wrapper.evaluate(
+      (element) => (element as HTMLElement).style.transform,
+    );
+
+    for (let image = 2; image <= 9; image += 1) {
+      await next.click();
+      await expect(
+        page.getByRole("button", { name: `View image ${image}`, exact: true }),
+      ).toHaveAttribute("aria-pressed", "true");
+    }
+
+    const selected = page.getByRole("button", {
+      name: "View image 9",
+      exact: true,
+    });
+
+    await expect(page.locator(".swiper-slide-active button")).toHaveAttribute(
+      "aria-label",
+      "View image 9",
+    );
+    await expect
+      .poll(async () =>
+        selected.evaluate((element) => {
+          const swiper = element.closest(".swiper");
+          if (!swiper) return false;
+
+          const container = swiper.getBoundingClientRect();
+          const thumbnail = element.getBoundingClientRect();
+
+          return thumbnail.top >= container.top - 1 && thumbnail.bottom <= container.bottom + 1;
+        }),
+      )
+      .toBe(true);
+
+    expect(await wrapper.evaluate((element) => (element as HTMLElement).style.transform)).not.toBe(
+      initialTransform,
+    );
+  });
+
   test("revisiting an image uses the cached resource", async ({ page }) => {
     const requests: string[] = [];
     page.on("request", (request) => {

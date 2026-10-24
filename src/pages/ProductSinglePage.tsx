@@ -249,7 +249,7 @@ const ProductSinglePage = () => {
                 aria-label="Previous product image"
                 onClick={() => selectImage(currentImageIndex - 1)}
                 disabled={!hasPreviousImage}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -271,6 +271,7 @@ const ProductSinglePage = () => {
                 key={activeProduct._id}
                 direction="vertical"
                 slidesPerView="auto"
+                slidesOffsetAfter={480}
                 spaceBetween={8}
                 mousewheel={true}
                 modules={[Mousewheel]}
@@ -320,7 +321,7 @@ const ProductSinglePage = () => {
                 aria-label="Next product image"
                 onClick={() => selectImage(currentImageIndex + 1)}
                 disabled={!hasNextImage}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
+                className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
