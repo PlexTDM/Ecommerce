@@ -16,24 +16,24 @@ test.describe("account", () => {
     await expect(page.getByText("Total orders")).toBeVisible();
     await expect(page.getByText("Saved addresses")).toBeVisible();
 
-    await page.getByRole("button", { name: "Addresses" }).click();
+    await page.getByRole("tab", { name: "Addresses" }).click();
     await expect(page.getByRole("heading", { name: "Saved Addresses" })).toBeVisible();
     await expect(page.getByText("1 Sakura Street")).toBeVisible();
     await expect(page.getByRole("button", { name: "Add address" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Orders" }).click();
+    await page.getByRole("tab", { name: "Orders" }).click();
     await expect(page.getByRole("heading", { name: "Order History" })).toBeVisible();
     await expect(page.getByText("COMPLETED")).toBeVisible();
     await expect(page.getByText("$80.99").first()).toBeVisible();
 
-    await page.getByRole("button", { name: "Settings" }).click();
+    await page.getByRole("tab", { name: "Settings" }).click();
     await expect(page.getByRole("button", { name: "Save changes" })).toBeVisible();
   });
 
   test("address editor is a viewport-wide modal and saves", async ({ page }) => {
     await mockLoggedInAccount(page);
     await page.goto("/account");
-    await page.getByRole("button", { name: "Addresses" }).click();
+    await page.getByRole("tab", { name: "Addresses" }).click();
     await page.getByRole("button", { name: "Add address" }).click();
 
     const dialog = page.getByRole("dialog", { name: "Add New Address" });
@@ -77,7 +77,7 @@ test.describe("account", () => {
   test("address editor closes with Escape", async ({ page }) => {
     await mockLoggedInAccount(page);
     await page.goto("/account");
-    await page.getByRole("button", { name: "Addresses" }).click();
+    await page.getByRole("tab", { name: "Addresses" }).click();
     await page.getByRole("button", { name: "Add address" }).click();
 
     const dialog = page.getByRole("dialog", { name: "Add New Address" });

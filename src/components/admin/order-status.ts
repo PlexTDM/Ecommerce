@@ -1,4 +1,4 @@
-import type { OrderStatus } from "../../types";
+import type { OrderStatus } from "@/types";
 
 export const ORDER_STATUSES: readonly OrderStatus[] = [
   "CREATED",

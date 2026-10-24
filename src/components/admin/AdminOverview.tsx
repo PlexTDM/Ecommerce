@@ -1,9 +1,9 @@
 import { useEffect, useState, type ComponentType, type SVGProps } from "react";
 import { motion } from "motion/react";
-import { fetchAdminStats, getAdminApiErrorMessage } from "../../api/admin";
-import type { AdminStats } from "../../types/admin";
+import { fetchAdminStats, getAdminApiErrorMessage } from "@/api/admin";
+import type { AdminStats } from "@/types/admin";
 import Spinner from "./Spinner";
-import { AdminOverviewSkeleton } from "../ui/skeletons";
+import { AdminOverviewSkeleton } from "@/components/ui/skeletons";
 import { AlertIcon, BoxIcon, ClockIcon, CurrencyIcon, ReceiptIcon, RefreshIcon } from "./icons";
 import { formatCurrency, formatNumber } from "./format";
 

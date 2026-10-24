@@ -1,4 +1,4 @@
-import type { Order, OrderStatus } from "../../types";
+import type { Order, OrderStatus } from "@/types";
 
 interface OrderHistoryProps {
   orders: Order[];

@@ -8,13 +8,13 @@ import React, {
 } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addCart } from "../redux/action";
-import { SideSearchBar, Pagination, StarVotes } from "../components";
-import { ProductCardSkeleton } from "../components/ui/skeletons";
+import { addCart } from "@/redux/action";
+import { SideSearchBar, Pagination, StarVotes } from "@/components";
+import { ProductCardSkeleton } from "@/components/ui/skeletons";
 import { animate, motion } from "motion/react";
-import { imageAt, imageSrcSet, type ImageVariant } from "../lib/images";
-import { ProductsContext } from "../context/ProductsContext";
-import type { Product as ProductType } from "../types";
+import { imageAt, imageSrcSet, type ImageVariant } from "@/lib/images";
+import { ProductsContext } from "@/context/ProductsContext";
+import type { Product as ProductType } from "@/types";
 
 const GRID_IMAGE_SOURCES: readonly ImageVariant[] = [
   { width: 256, size: "256.256" },
@@ -47,6 +47,7 @@ const Product = () => {
   };
 
   const currentPage = parseInt(page, 10);
+  const searchQuery = searchParams.get("q")?.trim() ?? "";
 
   useEffect(() => {
     const q = searchParams.get("q");
@@ -127,131 +128,194 @@ const Product = () => {
       );
     };
 
+    const discount = Number(product.discount) || 0;
+    const effectivePrice =
+      discount > 0
+        ? Math.round((product.price * (1 - discount / 100) + Number.EPSILON) * 100) / 100
+        : product.price;
+
     return (
       <motion.div
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        whileHover={{
-          boxShadow: "rgba(0, 0, 0, 0.3) 0px 0px 15px 0px",
-        }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{
-          opacity: { duration: 0.5, ease: "easeIn" },
-          y: { duration: 0.4, ease: "easeIn" },
-          boxShadow: { duration: 0.2 },
-        }}
-        className="border border-gray-200 p-2 relative rounded-md text-sm xl:text-base"
+        whileHover={{ y: -4 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-lg"
       >
-        <Link
-          to={`/product/${product._id}`}
-          state={{ productData: product }}
-          className="relative cursor-pointer min-h-64 w-full overflow-hidden"
-        >
-          <img
-            src="https://dzt1km7tv28ex.cloudfront.net/static/shop/product_no_image.png"
-            className="absolute top-0 left-0 w-full h-full object-cover blur-md"
-            alt=""
-            aria-hidden="true"
-            width={400}
-            height={400}
-            loading="lazy"
-            decoding="async"
-          />
-          <img
-            src={imageAt(product.image, "400.400")}
-            srcSet={imageSrcSet(product.image, GRID_IMAGE_SOURCES) || undefined}
-            sizes={GRID_IMAGE_SIZES}
-            alt={product.title}
-            width={400}
-            height={400}
-            ref={imgRef}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-auto min-h-43"
-          />
-
-          {product.isNewProduct && (
-            <div className="absolute -rotate-45 top-1 left-1 bg-accent rounded-full w-10 h-10 flex items-center justify-center text-white">
-              <p className="mb-1 uppercase text-sm">New</p>
-            </div>
-          )}
-        </Link>
-
-        <div className="flex flex-col grow p-2">
+        <div className="relative overflow-hidden bg-gray-50">
           <Link
             to={`/product/${product._id}`}
             state={{ productData: product }}
-            className="hover:text-gray-500 max-w-full line-clamp-2 cursor-pointer duration-100"
+            className="block aspect-square w-full overflow-hidden"
+          >
+            <img
+              src={imageAt(product.image, "400.400")}
+              srcSet={imageSrcSet(product.image, GRID_IMAGE_SOURCES) || undefined}
+              sizes={GRID_IMAGE_SIZES}
+              alt={product.title}
+              width={400}
+              height={400}
+              ref={imgRef}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </Link>
+
+          <div className="pointer-events-none absolute inset-x-2 top-2 flex items-start justify-between gap-2">
+            {product.isNewProduct ? (
+              <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+                New
+              </span>
+            ) : (
+              <span />
+            )}
+            {discount > 0 ? (
+              <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                -{discount}%
+              </span>
+            ) : null}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            aria-label="Add to cart"
+            title="Add to cart"
+            className="absolute bottom-2 right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/95 text-gray-800 shadow-md backdrop-blur transition-all hover:bg-indigo-600 hover:text-white sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4.5 w-4.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div className="flex flex-1 flex-col p-3 sm:p-4">
+          <Link
+            to={`/product/${product._id}`}
+            state={{ productData: product }}
+            className="line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-text transition-colors hover:text-primary sm:text-base"
           >
             {product.title}
           </Link>
 
-          <StarVotes product={product} />
+          <div className="mt-1">
+            <StarVotes product={product} />
+          </div>
 
-          {product.discount ? (
-            <div>
-              <p className="line-through text-gray-500 text-sm">${product.price}</p>
-              <p className="flex items-center gap-2 text-red-600">
-                ${Math.round(product.price * (1 - product.discount / 100) * 100) / 100}
-                <span className="text-xs">({product.discount}% OFF)</span>
-              </p>
-            </div>
-          ) : (
-            <div className="mt-4">
-              <p className="text-red-600">${product.price}</p>
-            </div>
-          )}
+          <div className="mt-auto flex flex-wrap items-baseline gap-2 pt-2">
+            {discount > 0 ? (
+              <>
+                <span className="text-sm font-bold text-rose-600 sm:text-base">
+                  ${effectivePrice}
+                </span>
+                <span className="text-xs text-gray-400 line-through">${product.price}</span>
+              </>
+            ) : (
+              <span className="text-sm font-bold text-text sm:text-base">${product.price}</span>
+            )}
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          aria-label="Add to cart"
-          title="Add to cart"
-          className="mt-2 bg-gray-300/70 shadow-2xl absolute bottom-2 right-2 flex opacity-0 duration-100 group-hover:opacity-100 transition-all text-white p-2 items-center justify-center rounded hover:bg-gray-300 cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-black"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-          </svg>
-        </button>
       </motion.div>
     );
   };
 
   return (
-    <>
-      <div className="w-full px-6 md:8 lg:px-12 mx-auto mt-10 flex gap-4">
-        <div className="w-full">
-          <div className="w-full grid max-[864px]:grid-cols-2 grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 justify-center">
-            {productsLoading
-              ? Array(20)
-                  .fill(null)
-                  .map((_, index) => <ProductCardSkeleton key={index} />)
-              : products?.map((p) => <ShowProduct key={p.id} product={p} />)}
-            {notFound && <h1>Not Found</h1>}
+    <div className="min-h-screen bg-background pb-12 sm:pb-16">
+      <div className="mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-6 lg:px-10">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
+              Catalog
+            </p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-text sm:text-3xl">
+              Products
+            </h1>
           </div>
-          {totalPages > 1 && <Pagination pages={totalPages} page={currentPage} />}
+
+          <span className="shrink-0 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm">
+            {totalProducts.all} {totalProducts.all === 1 ? "product" : "products"}
+          </span>
         </div>
-        <div>
-          <SideSearchBar
-            onFilterChange={handleFilterChange}
-            onSubmit={handleCustomPrice}
-            productsLength={totalProducts}
-          />
+
+        <p className="mt-2 text-sm text-gray-500">
+          {searchQuery
+            ? `Showing results for “${searchQuery}”`
+            : "Figures, plushies, and collectibles for every fan."}
+        </p>
+
+        <div className="mt-6 flex flex-col gap-8 lg:flex-row">
+          <div className="min-w-0 flex-1">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
+              {productsLoading
+                ? Array.from({ length: 10 }, (_, index) => <ProductCardSkeleton key={index} />)
+                : products?.map((p) => <ShowProduct key={p.id} product={p} />)}
+
+              {notFound && (
+                <div className="col-span-full flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-200 bg-white px-6 py-16 text-center">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50 text-gray-400">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  </span>
+                  <h2 className="mt-4 text-lg font-semibold text-text">No products found</h2>
+                  <p className="mt-1 max-w-sm text-sm text-gray-500">
+                    {searchQuery
+                      ? `We couldn't find anything for “${searchQuery}”.`
+                      : "Try adjusting your filters or browse the full catalog."}
+                  </p>
+                  <Link
+                    to="/products"
+                    className="mt-5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+                  >
+                    Browse all products
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center">
+                <Pagination pages={totalPages} page={currentPage} />
+              </div>
+            )}
+          </div>
+
+          <div className="hidden lg:block">
+            <SideSearchBar
+              onFilterChange={handleFilterChange}
+              onSubmit={handleCustomPrice}
+              productsLength={totalProducts}
+            />
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

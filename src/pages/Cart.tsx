@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { RootState } from "../redux/store";
-import { INCREASE_QTY, DECREASE_QTY, DELETE_ITEM } from "../redux/action";
+import { RootState } from "@/redux/store";
+import { INCREASE_QTY, DECREASE_QTY, DELETE_ITEM } from "@/redux/action";
 
 const Cart = () => {
   const cart = useSelector((state: RootState) => state.handleCart);

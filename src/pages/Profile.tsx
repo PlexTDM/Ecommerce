@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchOrders, fetchProfile, getAccessToken, getApiErrorMessage } from "../api";
-import ProfileTabs from "../components/profile/ProfileTabs";
-import { ProfileSkeleton } from "../components/ui/skeletons";
-import type { Order, Profile as ProfileModel, PublicUser } from "../types";
+import { fetchOrders, fetchProfile, getAccessToken, getApiErrorMessage } from "@/api";
+import ProfileTabs from "@/components/profile/ProfileTabs";
+import { ProfileSkeleton } from "@/components/ui/skeletons";
+import type { Order, Profile as ProfileModel, PublicUser } from "@/types";
 
 const readStoredUser = (): PublicUser | null => {
   if (typeof window === "undefined") return null;

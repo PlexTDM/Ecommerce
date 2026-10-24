@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
-import { getApiErrorMessage, updateAccountProfile, updatePassword } from "../../api";
+import { getApiErrorMessage, updateAccountProfile, updatePassword } from "@/api";
 import {
   passwordSchema,
   settingsSchema,
   type PasswordFormData,
   type SettingsFormData,
-} from "../../lib/profile-schema";
-import type { PublicUser } from "../../types";
+} from "@/lib/profile-schema";
+import type { PublicUser } from "@/types";
 
 interface SettingsFormProps {
   user: PublicUser | null;

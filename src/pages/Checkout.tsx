@@ -4,9 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Paypal from "../components/Paypal";
-import type { RootState } from "../redux/store";
-import type { CartItem, ShippingInput } from "../types";
+import Paypal from "@/components/Paypal";
+import type { RootState } from "@/redux/store";
+import type { CartItem, ShippingInput } from "@/types";
 
 const checkoutSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),

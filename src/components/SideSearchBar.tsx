@@ -1,5 +1,5 @@
 import type { ChangeEventHandler, FormEvent } from "react";
-import type { ProductsTotal } from "../types";
+import type { ProductsTotal } from "@/types";
 
 export interface SideSearchBarProps {
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;

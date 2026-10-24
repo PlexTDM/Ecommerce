@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import { getFullImage, imageAt, imageSrcSet, type ImageVariant } from "../lib/images";
-import { sanitizeProductHtml } from "../lib/sanitize";
+import { getFullImage, imageAt, imageSrcSet, type ImageVariant } from "@/lib/images";
+import { sanitizeProductHtml } from "@/lib/sanitize";
 import { EasyZoomOnHover } from "easy-magnify";
 import { Mousewheel } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
-import "../custom-swiper.css";
+import "@/custom-swiper.css";
 import { useDispatch } from "react-redux";
-import { addCart } from "../redux/action";
+import { addCart } from "@/redux/action";
 import { animate } from "motion/react";
-import { StarVotes } from "../components";
-import { ProductCardSkeleton, ProductImageSkeleton } from "../components/ui/skeletons";
-import { ProductsContext } from "../context/ProductsContext";
-import type { Product } from "../types";
+import { StarVotes } from "@/components";
+import { ProductCardSkeleton, ProductImageSkeleton } from "@/components/ui/skeletons";
+import { ProductsContext } from "@/context/ProductsContext";
+import type { Product } from "@/types";
 
 const CDN_PREFIX = "https://resize.cdn.otakumode.com/ex/50.50/shop/product/";
 

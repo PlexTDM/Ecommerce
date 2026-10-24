@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { loginSchema, type LoginFormData } from "../lib/auth-schema";
-import { setAuthSession } from "../lib/auth-storage";
-import { getApiErrorMessage, loginUser } from "../api";
+import { loginSchema, type LoginFormData } from "@/lib/auth-schema";
+import { setAuthSession } from "@/lib/auth-storage";
+import { getApiErrorMessage, loginUser } from "@/api";
 import toast from "react-hot-toast";
 
 const LoginForm = () => {

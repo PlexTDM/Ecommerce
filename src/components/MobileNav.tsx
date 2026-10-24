@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Search from "./Search";
-import type { PublicUser } from "../types";
+import type { PublicUser } from "@/types";
 
 interface NavigationItem {
   label: string;
@@ -70,13 +70,12 @@ const MobileNav = ({
   onLogout,
 }: MobileNavProps) => {
   const sheetRef = useRef<HTMLDivElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (!open) return;
 
-    closeButtonRef.current?.focus();
+    sheetRef.current?.focus();
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -199,6 +198,7 @@ const MobileNav = ({
                 role="dialog"
                 aria-modal="true"
                 aria-label="Mobile navigation"
+                tabIndex={-1}
                 onKeyDown={trapFocus}
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
@@ -208,27 +208,13 @@ const MobileNav = ({
                     ? { duration: 0 }
                     : { type: "spring", stiffness: 360, damping: 36 }
                 }
-                className="relative max-h-[88dvh] w-full overflow-y-auto overscroll-contain rounded-t-[28px] bg-white pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-24px_60px_-20px_rgba(15,23,42,0.45)]"
+                className="relative max-h-[88dvh] w-full overflow-y-auto overscroll-contain rounded-t-[28px] bg-white pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-24px_60px_-20px_rgba(15,23,42,0.45)] outline-none"
               >
-                <div className="sticky top-0 z-10 bg-white/95 px-4 pt-3 backdrop-blur">
+                <div className="sticky top-0 z-10 bg-white/95 px-4 pt-3">
                   <div aria-hidden="true" className="mx-auto h-1.5 w-12 rounded-full bg-gray-200" />
-                  <div className="flex items-center justify-between py-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-400">
-                      Browse
-                    </p>
-                    <button
-                      ref={closeButtonRef}
-                      type="button"
-                      onClick={onClose}
-                      aria-label="Close navigation menu"
-                      className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
-                    >
-                      <CloseIcon className="h-4.5 w-4.5" />
-                    </button>
-                  </div>
                 </div>
 
-                <div className="px-4">
+                <div className="px-4 mt-3">
                   <nav aria-label="Mobile" className="grid grid-cols-2 gap-2">
                     {NAV_ITEMS.map(({ label, to, Icon, isActive }) => {
                       const active = isActive(pathname);
@@ -543,24 +529,6 @@ function ChevronIcon(props: SVGProps<SVGSVGElement>) {
       {...props}
     >
       <path d="m9 5 7 7-7 7" />
-    </svg>
-  );
-}
-
-function CloseIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M6 18 18 6M6 6l12 12" />
     </svg>
   );
 }

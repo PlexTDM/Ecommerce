@@ -1,6 +1,6 @@
-import type { ProductRating } from "../types";
+import type { ProductRating } from "@/types";
 
-export { getFullImage } from "../lib/images";
+export { getFullImage } from "@/lib/images";
 
 /**
  * Computes the weighted average star rating from the server's rating buckets

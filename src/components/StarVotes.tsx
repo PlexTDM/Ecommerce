@@ -1,4 +1,4 @@
-import { calculateAverageRating, totalVotes } from "../helper/functions";
+import { calculateAverageRating, totalVotes } from "@/helper/functions";
 import { Product } from "@/types";
 
 const StarVotes = ({ product }: { product: Product }) => {

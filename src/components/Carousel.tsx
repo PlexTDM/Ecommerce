@@ -17,7 +17,7 @@ const thumbnails = [
 
 const Carousel = () => {
   return (
-    <div className="flex h-87.5 w-full gap-4">
+    <div className="flex h-52 w-full gap-4 sm:h-72 lg:h-87.5">
       <div className="min-w-0 max-w-5xl flex-1">
         <Swiper
           modules={[Controller, Pagination, Autoplay]}

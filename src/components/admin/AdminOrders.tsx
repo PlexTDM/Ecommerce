@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { fetchAdminOrders, getAdminApiErrorMessage, updateAdminOrderStatus } from "../../api/admin";
-import type { AdminOrder, AdminOrdersResponse } from "../../types/admin";
-import type { OrderStatus } from "../../types";
+import { fetchAdminOrders, getAdminApiErrorMessage, updateAdminOrderStatus } from "@/api/admin";
+import type { AdminOrder, AdminOrdersResponse } from "@/types/admin";
+import type { OrderStatus } from "@/types";
 import AdminPagination from "./AdminPagination";
 import OrderStatusBadge from "./OrderStatusBadge";
 import Spinner from "./Spinner";
 import { ORDER_STATUSES, isOrderStatus } from "./order-status";
 import { AlertIcon, CloseIcon, RefreshIcon, ReceiptIcon, UserIcon } from "./icons";
 import { formatCurrency, formatDate, formatDateTime, formatNumber } from "./format";
-import { AdminTableSkeleton } from "../ui/skeletons";
+import { AdminTableSkeleton } from "@/components/ui/skeletons";
 
 const PAGE_SIZE = 20;
 

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import toast from "react-hot-toast";
-import { getApiErrorMessage, updateProfile } from "../../api";
-import type { AddressFormData } from "../../lib/profile-schema";
-import type { Address, Profile } from "../../types";
+import { getApiErrorMessage, updateProfile } from "@/api";
+import type { AddressFormData } from "@/lib/profile-schema";
+import type { Address, Profile } from "@/types";
 import AddEditAddress from "./AddEditAddress";
 
 interface AddressBookProps {

@@ -5,7 +5,7 @@ import {
   getRefreshToken,
   getStoredUser,
   updateStoredTokens,
-} from "../lib/auth-storage";
+} from "@/lib/auth-storage";
 import type {
   AuthCredentials,
   AuthResponse,
@@ -21,7 +21,7 @@ import type {
   UpdateAccountProfilePayload,
   UpdatePasswordPayload,
   UpdateProfilePayload,
-} from "../types";
+} from "@/types";
 
 export { getAccessToken, getRefreshToken, getStoredUser };
 

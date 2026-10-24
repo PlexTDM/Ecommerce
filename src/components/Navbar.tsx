@@ -5,8 +5,8 @@ import { motion } from "motion/react";
 import Search from "./Search";
 import MobileNav from "./MobileNav";
 import { RootState } from "@/redux/store";
-import { logout } from "../api";
-import { useAuth } from "../hooks/useAuth";
+import { logout } from "@/api";
+import { useAuth } from "@/hooks/useAuth";
 
 const StyledLink = (props: LinkProps) => {
   return (

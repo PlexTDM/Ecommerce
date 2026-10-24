@@ -1,4 +1,4 @@
-import type { OrderStatus } from "../../types";
+import type { OrderStatus } from "@/types";
 import { ORDER_STATUS_STYLES } from "./order-status";
 
 interface OrderStatusBadgeProps {

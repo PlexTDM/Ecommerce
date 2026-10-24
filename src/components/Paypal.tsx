@@ -7,9 +7,9 @@ import {
   type ReactPayPalScriptOptions,
 } from "@paypal/react-paypal-js";
 import toast from "react-hot-toast";
-import { capturePaymentOrder, createPaymentOrder, getApiErrorMessage } from "../api";
-import { CLEAR_CART } from "../redux/action";
-import type { CartItem, PaymentCartLine, ShippingInput } from "../types";
+import { capturePaymentOrder, createPaymentOrder, getApiErrorMessage } from "@/api";
+import { CLEAR_CART } from "@/redux/action";
+import type { CartItem, PaymentCartLine, ShippingInput } from "@/types";
 
 type CreateOrderHandler = NonNullable<PayPalButtonsComponentProps["createOrder"]>;
 type OnApproveHandler = NonNullable<PayPalButtonsComponentProps["onApprove"]>;

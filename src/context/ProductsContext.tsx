@@ -1,6 +1,6 @@
 import { createContext, useState, useCallback, useRef, type ReactNode } from "react";
-import { fetchProducts, fetchProductById, fetchRelatedProducts } from "../api";
-import type { Product, ProductsResponse, ProductsTotal } from "../types";
+import { fetchProducts, fetchProductById, fetchRelatedProducts } from "@/api";
+import type { Product, ProductsResponse, ProductsTotal } from "@/types";
 
 interface ProductsContextValue {
   // state

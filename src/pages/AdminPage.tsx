@@ -1,12 +1,12 @@
 import { useState, type ComponentType, type SVGProps } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { motion } from "motion/react";
-import AdminOverview from "../components/admin/AdminOverview";
-import AdminProducts from "../components/admin/AdminProducts";
-import AdminOrders from "../components/admin/AdminOrders";
-import { BoxIcon, ChartIcon, ReceiptIcon, ShieldIcon } from "../components/admin/icons";
-import type { AdminTabId } from "../types/admin";
+import AdminOverview from "@/components/admin/AdminOverview";
+import AdminProducts from "@/components/admin/AdminProducts";
+import AdminOrders from "@/components/admin/AdminOrders";
+import { BoxIcon, ChartIcon, ReceiptIcon, ShieldIcon } from "@/components/admin/icons";
+import type { AdminTabId } from "@/types/admin";
 
 interface AdminTab {
   id: AdminTabId;

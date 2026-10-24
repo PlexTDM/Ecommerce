@@ -1,4 +1,4 @@
-import type { Order, Profile, PublicUser } from "../../types";
+import type { Order, Profile, PublicUser } from "@/types";
 
 interface ProfileOverviewProps {
   user: PublicUser | null;

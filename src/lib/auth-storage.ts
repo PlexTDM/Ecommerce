@@ -1,4 +1,4 @@
-import type { PublicUser } from "../types";
+import type { PublicUser } from "@/types";
 
 export const AUTH_CHANGED_EVENT = "auth:changed";
 

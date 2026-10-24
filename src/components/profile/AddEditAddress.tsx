@@ -3,8 +3,8 @@ import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
-import { addressSchema, type AddressFormData } from "../../lib/profile-schema";
-import type { Address } from "../../types";
+import { addressSchema, type AddressFormData } from "@/lib/profile-schema";
+import type { Address } from "@/types";
 
 interface AddEditAddressProps {
   address: Address | null;

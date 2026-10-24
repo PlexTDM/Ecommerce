@@ -1,5 +1,5 @@
-import type { CartItem } from "../../types";
-import type { CartAction } from "../action";
+import type { CartItem } from "@/types";
+import type { CartAction } from "@/redux/action";
 
 const CART_STORAGE_KEY = "cart";
 

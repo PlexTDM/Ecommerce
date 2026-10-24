@@ -1,31 +1,5 @@
 import { Link } from "react-router-dom";
-
-const categories = [
-  {
-    name: "Men's Clothing",
-    image:
-      "https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=800",
-    path: "/products",
-  },
-  {
-    name: "Women's Clothing",
-    image:
-      "https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=800",
-    path: "/products",
-  },
-  {
-    name: "Jewelery",
-    image:
-      "https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=800",
-    path: "/products",
-  },
-  {
-    name: "Electronics",
-    image:
-      "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=800",
-    path: "/products",
-  },
-];
+import { storeCategories } from "@/data/categories";
 
 const Categories = () => {
   return (
@@ -41,7 +15,7 @@ const Categories = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {categories.map((category, index) => (
+          {storeCategories.map((category, index) => (
             <Link
               key={index}
               to={category.path}

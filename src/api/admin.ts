@@ -1,6 +1,6 @@
 import axios from "axios";
 import { authenticatedApi } from "./index";
-import type { Order, OrderStatus, Product } from "../types";
+import type { Order, OrderStatus, Product } from "@/types";
 import type {
   AdminOrdersQuery,
   AdminOrdersResponse,
@@ -8,7 +8,7 @@ import type {
   AdminProductsQuery,
   AdminProductsResponse,
   AdminStats,
-} from "../types/admin";
+} from "@/types/admin";
 
 /** Admin requests share the authenticated client and its 401 refresh flow. */
 const adminApi = authenticatedApi;

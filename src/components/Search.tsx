@@ -11,8 +11,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { ProductsContext } from "../context/ProductsContext";
-import type { Product } from "../types";
+import { ProductsContext } from "@/context/ProductsContext";
+import type { Product } from "@/types";
 
 const Search = () => {
   const navigate = useNavigate();

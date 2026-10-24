@@ -1,6 +1,6 @@
 import { z } from "zod";
-import type { Product, ProductDescription } from "../types";
-import type { AdminProductPayload } from "../types/admin";
+import type { Product, ProductDescription } from "@/types";
+import type { AdminProductPayload } from "@/types/admin";
 
 const isNonNegativeNumber = (value: string): boolean => {
   if (value.trim() === "") return false;

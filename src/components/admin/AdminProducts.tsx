@@ -7,15 +7,15 @@ import {
   fetchAdminProducts,
   getAdminApiErrorMessage,
   updateAdminProduct,
-} from "../../api/admin";
-import type { Product } from "../../types";
-import type { AdminProductsResponse } from "../../types/admin";
-import { productFormToPayload, type ProductFormData } from "../../lib/admin-schema";
+} from "@/api/admin";
+import type { Product } from "@/types";
+import type { AdminProductsResponse } from "@/types/admin";
+import { productFormToPayload, type ProductFormData } from "@/lib/admin-schema";
 import AdminPagination from "./AdminPagination";
 import ConfirmDialog from "./ConfirmDialog";
 import ProductFormModal from "./ProductFormModal";
 import Spinner from "./Spinner";
-import { AdminTableSkeleton } from "../ui/skeletons";
+import { AdminTableSkeleton } from "@/components/ui/skeletons";
 import {
   AlertIcon,
   BoxIcon,

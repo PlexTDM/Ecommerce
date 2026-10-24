@@ -8,8 +8,8 @@ import {
   productFormSchema,
   productToFormValues,
   type ProductFormData,
-} from "../../lib/admin-schema";
-import type { Product } from "../../types";
+} from "@/lib/admin-schema";
+import type { Product } from "@/types";
 
 interface ProductFormModalProps {
   product: Product | null;

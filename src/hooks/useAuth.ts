@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { getAuthSnapshot, subscribeToAuthChanges, type AuthSnapshot } from "../lib/auth-storage";
+import { getAuthSnapshot, subscribeToAuthChanges, type AuthSnapshot } from "@/lib/auth-storage";
 
 const EMPTY_SNAPSHOT: AuthSnapshot = {
   user: null,
