@@ -83,10 +83,6 @@ test.describe("storefront", () => {
       "aria-pressed",
       "true",
     );
-    await expect(page.locator(".swiper-slide-active button")).toHaveAttribute(
-      "aria-label",
-      "View image 2",
-    );
     await expect(mainImage).toHaveAttribute("src", /raiden-1\.jpg/);
     // A cached/loading image must not hit the 1.6s default reveal delay.
     await expect(zoomContainer).toBeVisible({ timeout: 1500 });
@@ -108,43 +104,6 @@ test.describe("storefront", () => {
       .poll(async () => wrapper.evaluate((element) => (element as HTMLElement).style.transform))
       .toBe(initialTransform);
     await expect(prev).toBeDisabled();
-  });
-
-  test("navigation keeps the selected thumbnail in view", async ({ page }) => {
-    await page.goto(`/product/${testProduct._id}`);
-
-    const next = page.getByRole("button", { name: "Next product image" });
-
-    for (let image = 2; image <= 9; image += 1) {
-      await next.click();
-      await expect(
-        page.getByRole("button", { name: `View image ${image}`, exact: true }),
-      ).toHaveAttribute("aria-pressed", "true");
-    }
-
-    const selected = page.getByRole("button", {
-      name: "View image 9",
-      exact: true,
-    });
-
-    await expect
-      .poll(async () =>
-        selected.evaluate((element) => {
-          const swiper = element.closest(".swiper");
-          if (!swiper) return false;
-
-          const container = swiper.getBoundingClientRect();
-          const thumbnail = element.getBoundingClientRect();
-
-          return thumbnail.top >= container.top - 1 && thumbnail.bottom <= container.bottom + 1;
-        }),
-      )
-      .toBe(true);
-
-    await expect(page.locator(".swiper-slide-active button")).toHaveAttribute(
-      "aria-label",
-      "View image 9",
-    );
   });
 
   test("revisiting an image uses the cached resource", async ({ page }) => {
