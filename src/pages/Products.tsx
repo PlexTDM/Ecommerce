@@ -12,7 +12,7 @@ import { addCart } from "@/redux/action";
 import { SideSearchBar, Pagination, StarVotes } from "@/components";
 import { ProductCardSkeleton } from "@/components/ui/skeletons";
 import { animate, motion } from "motion/react";
-import { Search, ShoppingCart, X } from "lucide-react";
+import { ImageOff, Search, ShoppingCart, X } from "lucide-react";
 import { imageAt, imageSrcSet, type ImageVariant } from "@/lib/images";
 import { ProductsContext } from "@/context/ProductsContext";
 import type { Product as ProductType } from "@/types";
@@ -107,7 +107,18 @@ const Product = () => {
 
   const ShowProduct = ({ product }: { product: ProductType }) => {
     const [isFlying, setIsFlying] = useState(false);
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [imageFailed, setImageFailed] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
+
+    // Cached images may finish before React attaches the load listener.
+    useEffect(() => {
+      const image = imgRef.current;
+
+      if (image?.complete && image.naturalWidth > 0) {
+        setImageLoaded(true);
+      }
+    }, []);
 
     const handleAddToCart = (e: React.MouseEvent) => {
       if (isFlying) return;
@@ -168,8 +179,17 @@ const Product = () => {
           <Link
             to={`/product/${product._id}`}
             state={{ productData: product }}
-            className="block aspect-square w-full overflow-hidden"
+            className="relative block aspect-square w-full overflow-hidden bg-gray-100"
           >
+            {!imageFailed && (
+              <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 animate-pulse bg-gray-200 transition-opacity duration-300 ${
+                  imageLoaded ? "opacity-0" : "opacity-100"
+                }`}
+              />
+            )}
+
             <img
               src={imageAt(product.image, "400.400")}
               srcSet={imageSrcSet(product.image, GRID_IMAGE_SOURCES) || undefined}
@@ -180,8 +200,21 @@ const Product = () => {
               ref={imgRef}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageFailed(true)}
+              className={`relative h-full w-full object-cover transition duration-500 group-hover:scale-105 ${
+                imageLoaded && !imageFailed ? "opacity-100" : "opacity-0"
+              }`}
             />
+
+            {imageFailed && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-100 px-3 text-center text-gray-400">
+                <ImageOff className="h-7 w-7" />
+                <span className="text-[10px] font-semibold uppercase tracking-wide">
+                  Image unavailable
+                </span>
+              </div>
+            )}
           </Link>
 
           <div className="pointer-events-none absolute inset-x-2 top-2 flex items-start justify-between gap-2">
@@ -244,46 +277,48 @@ const Product = () => {
     <div className="min-h-screen bg-background pb-12 sm:pb-16">
       <div className="mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-6 lg:px-10">
         <h1 className="sr-only">Products</h1>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p>Products</p>
-          <form
-            onSubmit={handleSearchSubmit}
-            role="search"
-            className="w-full sm:max-w-2xl sm:flex-1"
-          >
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-              <input
-                type="search"
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-                placeholder="Search products..."
-                aria-label="Search products"
-                autoComplete="off"
-                className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-32 text-sm text-gray-900 shadow-sm transition-colors placeholder:text-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 [&::-webkit-search-cancel-button]:hidden"
-              />
-              {searchInput && (
-                <button
-                  type="button"
-                  onClick={clearSearch}
-                  aria-label="Clear search"
-                  className="absolute right-24 top-1/2 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-              <button
-                type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
-              >
-                Search
-              </button>
-            </div>
-          </form>
-        </div>
 
-        <div className="mt-6 flex flex-col gap-8 lg:flex-row">
+        <div className="flex flex-col gap-8 lg:flex-row">
           <div className="min-w-0 flex-1">
+            {/*search bar*/}
+            <div className="flex mb-4 gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <form
+                onSubmit={handleSearchSubmit}
+                role="search"
+                className="w-full sm:max-w-2xl sm:flex-1 mx-auto"
+              >
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="search"
+                    value={searchInput}
+                    onChange={(event) => setSearchInput(event.target.value)}
+                    placeholder="Search products..."
+                    aria-label="Search products"
+                    autoComplete="off"
+                    className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-32 text-sm text-gray-900 shadow-sm transition-colors placeholder:text-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 [&::-webkit-search-cancel-button]:hidden"
+                  />
+                  {searchInput && (
+                    <button
+                      type="button"
+                      onClick={clearSearch}
+                      aria-label="Clear search"
+                      className="absolute right-24 top-1/2 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+                  >
+                    Search
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/*products*/}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
               {productsLoading
                 ? Array.from({ length: 10 }, (_, index) => <ProductCardSkeleton key={index} />)
