@@ -48,6 +48,7 @@ const ProductSinglePage = () => {
     src: string;
   } | null>(null);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
+  const thumbSyncTimer = useRef<number | null>(null);
 
   const {
     productDetail,
@@ -85,7 +86,29 @@ const ProductSinglePage = () => {
     if (!activeProduct || !src) return;
 
     setSelectedImage({ productId: activeProduct._id, src });
-    thumbsSwiper?.slideTo(index);
+
+    if (!thumbsSwiper) return;
+
+    // `runCallbacks: false` keeps Swiper's clamped edge behaviour from
+    // overwriting the image chosen by the prev/next buttons.
+    thumbsSwiper.slideTo(index, 500, false);
+
+    // Near the end of the rail Swiper cannot scroll the target to the top, so
+    // it would leave an earlier slide marked active. Re-apply the active index
+    // after the transition settles so the Swiper selection matches the image.
+    if (thumbSyncTimer.current !== null) {
+      window.clearTimeout(thumbSyncTimer.current);
+    }
+
+    const swiper = thumbsSwiper;
+    thumbSyncTimer.current = window.setTimeout(() => {
+      thumbSyncTimer.current = null;
+
+      if (!swiper.destroyed) {
+        swiper.updateActiveIndex(index);
+        swiper.updateSlidesClasses();
+      }
+    }, 520);
   };
 
   const [isFlying, setIsFlying] = useState(false);
@@ -109,6 +132,14 @@ const ProductSinglePage = () => {
     const cachedProduct = productData && productData._id === id ? productData : undefined;
     void loadProductById(id, cachedProduct);
   }, [id, productData, loadProductById, setRelatedProducts]);
+
+  useEffect(() => {
+    return () => {
+      if (thumbSyncTimer.current !== null) {
+        window.clearTimeout(thumbSyncTimer.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const tag = activeProduct?.tags?.[0];
@@ -281,6 +312,11 @@ const ProductSinglePage = () => {
                 className="min-h-0 w-full flex-1"
                 onSwiper={setThumbsSwiper}
                 onSlideChange={(swiper) => {
+                  if (thumbSyncTimer.current !== null) {
+                    window.clearTimeout(thumbSyncTimer.current);
+                    thumbSyncTimer.current = null;
+                  }
+
                   const src = galleryImages[swiper.activeIndex];
 
                   if (src && activeProduct) {
