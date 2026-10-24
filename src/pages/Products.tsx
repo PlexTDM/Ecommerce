@@ -6,13 +6,13 @@ import React, {
   type ChangeEvent,
   type FormEvent,
 } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addCart } from "@/redux/action";
 import { SideSearchBar, Pagination, StarVotes } from "@/components";
 import { ProductCardSkeleton } from "@/components/ui/skeletons";
 import { animate, motion } from "motion/react";
-import { Search, ShoppingCart } from "lucide-react";
+import { Search, ShoppingCart, X } from "lucide-react";
 import { imageAt, imageSrcSet, type ImageVariant } from "@/lib/images";
 import { ProductsContext } from "@/context/ProductsContext";
 import type { Product as ProductType } from "@/types";
@@ -29,7 +29,10 @@ const GRID_IMAGE_SIZES =
 const Product = () => {
   const { page = "1" } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("q")?.trim() ?? "";
+  const [searchInput, setSearchInput] = useState(searchQuery);
   const [filters, setFilters] = useState<Record<string, string>>({});
 
   const {
@@ -48,23 +51,40 @@ const Product = () => {
   };
 
   const currentPage = parseInt(page, 10);
-  const searchQuery = searchParams.get("q")?.trim() ?? "";
 
   useEffect(() => {
-    const q = searchParams.get("q");
-    if (q) {
-      void searchProducts(q);
+    setSearchInput(searchQuery);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      void searchProducts(searchQuery);
     } else {
       void loadProducts(currentPage);
     }
-  }, [page]);
+  }, [currentPage, loadProducts, searchProducts, searchQuery]);
 
-  useEffect(() => {
-    const q = searchParams.get("q");
-    if (q) {
-      void searchProducts(q);
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const query = searchInput.trim();
+    void navigate(query ? `/products?q=${encodeURIComponent(query)}` : "/products", {
+      replace: true,
+    });
+
+    // Navigating to the same URL does not retrigger the data effect.
+    if (query && query === searchQuery && currentPage === 1) {
+      void searchProducts(query);
     }
-  }, [searchParams]);
+  };
+
+  const clearSearch = () => {
+    setSearchInput("");
+
+    if (!searchQuery) return;
+
+    void navigate("/products", { replace: true });
+  };
 
   const handleFilterChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -223,23 +243,44 @@ const Product = () => {
   return (
     <div className="min-h-screen bg-background pb-12 sm:pb-16">
       <div className="mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-6 lg:px-10">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-text sm:text-3xl">
-              Products
-            </h1>
-          </div>
-
-          <span className="shrink-0 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm">
-            {totalProducts.all} {totalProducts.all === 1 ? "product" : "products"}
-          </span>
+        <h1 className="sr-only">Products</h1>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p>Products</p>
+          <form
+            onSubmit={handleSearchSubmit}
+            role="search"
+            className="w-full sm:max-w-2xl sm:flex-1"
+          >
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <input
+                type="search"
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                placeholder="Search products..."
+                aria-label="Search products"
+                autoComplete="off"
+                className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-32 text-sm text-gray-900 shadow-sm transition-colors placeholder:text-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 [&::-webkit-search-cancel-button]:hidden"
+              />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  aria-label="Clear search"
+                  className="absolute right-24 top-1/2 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+              >
+                Search
+              </button>
+            </div>
+          </form>
         </div>
-
-        <p className="mt-2 text-sm text-gray-500">
-          {searchQuery
-            ? `Showing results for “${searchQuery}”`
-            : "Figures, plushies, and collectibles for every fan."}
-        </p>
 
         <div className="mt-6 flex flex-col gap-8 lg:flex-row">
           <div className="min-w-0 flex-1">

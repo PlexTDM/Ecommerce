@@ -55,6 +55,26 @@ test.describe("storefront", () => {
     await expect(page.getByRole("button", { name: "Add to Cart" })).toBeEnabled();
   });
 
+  test("products search bar updates the URL and can be cleared", async ({ page }) => {
+    await page.goto("/products");
+
+    const search = page.getByRole("searchbox", { name: "Search products" });
+
+    await expect(search).toHaveValue("");
+
+    await search.fill("raiden");
+    await search.press("Enter");
+
+    await expect(page).toHaveURL(/\/products\?q=raiden$/);
+    await expect(search).toHaveValue("raiden");
+    await expect(page.getByRole("heading", { name: "Products", level: 1 })).toBeAttached();
+
+    await page.getByRole("button", { name: "Clear search" }).click();
+
+    await expect(page).toHaveURL(/\/products$/);
+    await expect(search).toHaveValue("");
+  });
+
   test("gallery next/prev select the image and move the swiper", async ({ page }) => {
     await page.goto(`/product/${testProduct._id}`);
 
