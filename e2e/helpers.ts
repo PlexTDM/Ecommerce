@@ -105,6 +105,7 @@ export async function mockProductsApi(
     await route.fulfill({
       status: 200,
       contentType: "image/svg+xml",
+      headers: { "Cache-Control": "public, max-age=3600" },
       body: "<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect width='64' height='64' fill='#a5b4fc'/></svg>",
     });
   });

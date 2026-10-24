@@ -19,6 +19,22 @@ const CDN_PREFIX = "https://resize.cdn.otakumode.com/ex/50.50/shop/product/";
 const toGalleryImage = (image: string): string =>
   /^(https?:|data:|\/)/.test(image) ? image : CDN_PREFIX + image;
 
+// One preload per URL. The browser cache retains the decoded image, so
+// returning to a viewed image does not trigger a fresh request.
+const preloadedImages = new Set<string>();
+
+const preloadImage = (src: string, priority: "high" | "low" = "low"): void => {
+  if (!src || preloadedImages.has(src)) return;
+
+  preloadedImages.add(src);
+
+  const image = new Image();
+  image.decoding = "async";
+  image.fetchPriority = priority;
+  image.src = src;
+  void image.decode().catch(() => undefined);
+};
+
 const ProductSinglePage = () => {
   const location = useLocation();
   const { productData } = (location?.state as { productData?: Product }) || {};
@@ -101,19 +117,23 @@ const ProductSinglePage = () => {
     void loadRelatedProducts(tag);
   }, [activeProduct?._id, loadRelatedProducts]);
 
-  // Warm the zoom images so switching thumbnails feels instant.
+  // Warm every viewer-sized image once per product so thumbnail and
+  // prev/next navigation is instant.
   useEffect(() => {
     if (!activeProduct) return;
 
     const sources = [activeProduct.image, ...(activeProduct.moreImages ?? [])].map(toGalleryImage);
 
-    sources.forEach((src) => {
-      const img = new Image();
-      const imgFull = new Image();
-      img.src = getFullImage(src, mediumImg);
-      imgFull.src = getFullImage(src, largeImg);
-    });
+    sources.forEach((src) => preloadImage(getFullImage(src, mediumImg)));
   }, [activeProduct]);
+
+  // Only warm the high-resolution zoom image for the current selection.
+  // Preloading every large image would waste bandwidth and memory.
+  useEffect(() => {
+    if (!mainImage) return;
+
+    preloadImage(getFullImage(mainImage, largeImg), "high");
+  }, [mainImage]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     if (isFlying || !activeProduct) return;
@@ -322,10 +342,13 @@ const ProductSinglePage = () => {
             <div className="mb-4 relative z-40 h-150 min-w-125">
               {mainImage && (
                 <EasyZoomOnHover
-                  key={`${activeProduct._id}:${mainImage}`}
+                  key={activeProduct._id}
+                  delayTimer={0}
                   mainImage={{
                     alt: activeProduct.title,
                     src: getFullImage(mainImage, mediumImg),
+                    width: 500,
+                    height: 600,
                   }}
                   zoomImage={{
                     src: getFullImage(mainImage, largeImg),
@@ -334,6 +357,13 @@ const ProductSinglePage = () => {
                   zoomContainerWidth={500}
                   zoomContainerHeight={600}
                   distance={1}
+                  loadingIndicator={
+                    <div
+                      aria-hidden="true"
+                      style={{ width: 500, height: 600 }}
+                      className="max-w-full animate-pulse rounded-lg bg-gray-200"
+                    />
+                  }
                 />
               )}
             </div>

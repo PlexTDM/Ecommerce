@@ -63,10 +63,14 @@ test.describe("storefront", () => {
     });
     const next = page.getByRole("button", { name: "Next product image" });
     const mainImage = page.locator(".EasyZoomImageHoverMainContainer img").first();
+    const zoomContainer = page.locator(".EasyZoomImageHoverMainContainer").first();
 
     await expect(prev).toBeDisabled();
     await expect(next).toBeEnabled();
     await expect(mainImage).toHaveAttribute("src", /^data:image\/svg/);
+    await expect(zoomContainer).toBeVisible();
+    await expect(zoomContainer).toHaveCSS("width", "500px");
+    await expect(zoomContainer).toHaveCSS("height", "600px");
 
     const wrapper = page.locator(".swiper-vertical .swiper-wrapper").first();
     const initialTransform = await wrapper.evaluate(
@@ -80,6 +84,10 @@ test.describe("storefront", () => {
       "true",
     );
     await expect(mainImage).toHaveAttribute("src", /raiden-1\.jpg/);
+    // A cached/loading image must not hit the 1.6s default reveal delay.
+    await expect(zoomContainer).toBeVisible({ timeout: 1500 });
+    await expect(zoomContainer).toHaveCSS("width", "500px");
+    await expect(zoomContainer).toHaveCSS("height", "600px");
     await expect
       .poll(async () => wrapper.evaluate((element) => (element as HTMLElement).style.transform))
       .not.toBe(initialTransform);
@@ -96,6 +104,40 @@ test.describe("storefront", () => {
       .poll(async () => wrapper.evaluate((element) => (element as HTMLElement).style.transform))
       .toBe(initialTransform);
     await expect(prev).toBeDisabled();
+  });
+
+  test("revisiting an image uses the cached resource", async ({ page }) => {
+    const requests: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().includes("raiden-1.jpg")) {
+        requests.push(request.url());
+      }
+    });
+
+    await page.goto(`/product/${testProduct._id}`);
+
+    const prev = page.getByRole("button", {
+      name: "Previous product image",
+    });
+    const next = page.getByRole("button", { name: "Next product image" });
+    const mainImage = page.locator(".EasyZoomImageHoverMainContainer img").first();
+
+    await next.click();
+    await expect(mainImage).toHaveAttribute("src", /raiden-1\.jpg/);
+    await expect(page.locator(".EasyZoomImageHoverMainContainer").first()).toBeVisible();
+    await page.waitForTimeout(400);
+    const requestCount = requests.length;
+
+    expect(requestCount).toBeGreaterThan(0);
+
+    await prev.click();
+    await expect(mainImage).toHaveAttribute("src", /^data:image\/svg/);
+    await next.click();
+    await expect(mainImage).toHaveAttribute("src", /raiden-1\.jpg/);
+    await expect(page.locator(".EasyZoomImageHoverMainContainer").first()).toBeVisible();
+    await page.waitForTimeout(400);
+
+    expect(requests.length).toBe(requestCount);
   });
 
   test("switching products replaces the stale gallery slides", async ({ page }) => {
