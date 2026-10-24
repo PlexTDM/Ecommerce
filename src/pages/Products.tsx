@@ -202,7 +202,7 @@ const Product = () => {
               decoding="async"
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageFailed(true)}
-              className={`relative h-full w-full object-cover transition duration-500 group-hover:scale-105 ${
+              className={`relative h-full w-full object-cover transition duration-400 group-hover:scale-105 ${
                 imageLoaded && !imageFailed ? "opacity-100" : "opacity-0"
               }`}
             />
